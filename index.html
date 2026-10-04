@@ -493,13 +493,8 @@
         }
 
         async function getUsers() {
-            // Fetch users from user profiles or auth metadata mapped via Supabase
-            // For admin views, we query user profiles table if created, or fall back to active session mapping
             const { data, error } = await supabase.from('users').select('*');
-            if (error) { 
-                // Fallback if custom users table doesn't store metadata rows
-                return []; 
-            }
+            if (error) { return []; }
             return data.map(u => ({ username: u.username, email: u.email || 'N/A', role: u.role, createdAt: u.created_at }));
         }
 
@@ -609,14 +604,15 @@
             document.getElementById('mobile-menu').classList.toggle('hidden');
         }
 
+        // FIXED SIGN UP FUNCTION
         async function handleSignupSubmit(e) {
             e.preventDefault();
             const username = document.getElementById('signup-username').value.trim();
             const email = document.getElementById('signup-email').value.trim();
             const password = document.getElementById('signup-password').value;
             const errEl = document.getElementById('signup-error');
+            errEl.classList.add('hidden');
 
-            // 1. Call Supabase built-in Auth sign-up
             const { data, error } = await supabase.auth.signUp({
                 email: email,
                 password: password,
@@ -634,13 +630,13 @@
             const now = new Date();
             const dateStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
 
-            // Optional: Also insert row into users table if tracking profiles explicitly
-            await supabase.from('users').insert([{
+            // Save to users table safely
+            await supabase.from('users').upsert([{
                 username: username,
                 email: email,
                 role: 'customer',
                 created_at: dateStr
-            }]).select();
+            }], { onConflict: 'email' });
 
             setCurrentUser({ 
                 username: username, 
@@ -652,27 +648,37 @@
             router.navigate('home');
         }
 
+        // FIXED LOGIN FUNCTION
         async function handleLoginSubmit(e) {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value;
             const errEl = document.getElementById('login-error');
+            errEl.classList.add('hidden');
 
-            // 1. Call Supabase built-in Auth sign-in
             const { data, error } = await supabase.auth.signInWithPassword({
                 email: email,
                 password: password
             });
 
             if (error) {
-                errEl.textContent = "Invalid email or password.";
+                errEl.textContent = "Invalid email or password: " + error.message;
                 errEl.classList.remove('hidden');
                 return;
             }
 
-            const userMeta = data.user.user_metadata || {};
-            const username = userMeta.username || email.split('@')[0];
-            const role = userMeta.role || 'customer';
+            // Fetch explicit database role if available to ensure admin access matches database
+            let role = 'customer';
+            let username = email.split('@')[0];
+
+            const { data: profile } = await supabase.from('users').select('*').eq('email', email).single();
+            if (profile) {
+                role = profile.role || 'customer';
+                username = profile.username || username;
+            } else if (data.user && data.user.user_metadata) {
+                role = data.user.user_metadata.role || 'customer';
+                username = data.user.user_metadata.username || username;
+            }
 
             setCurrentUser({ 
                 username: username, 
@@ -1157,14 +1163,25 @@
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
-            // Check if active Supabase Auth session exists on reload
             const { data: { session } } = await supabase.auth.getSession();
             if (session && session.user) {
-                const userMeta = session.user.user_metadata || {};
+                const email = session.user.email;
+                let role = 'customer';
+                let username = email.split('@')[0];
+
+                const { data: profile } = await supabase.from('users').select('*').eq('email', email).single();
+                if (profile) {
+                    role = profile.role || 'customer';
+                    username = profile.username || username;
+                } else if (session.user.user_metadata) {
+                    role = session.user.user_metadata.role || 'customer';
+                    username = session.user.user_metadata.username || username;
+                }
+
                 setCurrentUser({
-                    username: userMeta.username || session.user.email.split('@')[0],
-                    email: session.user.email,
-                    role: userMeta.role || 'customer',
+                    username: username,
+                    email: email,
+                    role: role,
                     createdAt: session.user.created_at
                 });
             } else {
