@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alteo Edit Services</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            900: '#0b0d10',
+                            800: '#12151b',
+                            700: '#1a1f29',
+                            600: '#252b38',
+                            500: '#343c4d'
+                        },
+                        brand: {
+                            DEFAULT: '#7289da',
+                            hover: '#5b73c7'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0d10;
+            color: #cbd5e1;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #12151b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #252b38;
+            border-radius: 3px;
+        }
+        .fade-in {
+            animation: fadeIn 0.15s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(2px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-dark-900 text-slate-200 antialiased selection:bg-brand selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 bg-dark-800/95 backdrop-blur border-b border-dark-600/60">
+        <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+            <div class="flex items-center space-x-2.5 cursor-pointer" onclick="router.navigate('home')">
+                <img src="image_2.png" alt="Alteo Edit Logo" class="w-8 h-8 rounded-md object-cover border border-dark-600 shadow-sm" onerror="this.src='https://placehold.co/32x32/1a1f29/ffffff?text=Alteo'">
+                <div class="flex flex-col">
+                    <span class="font-bold tracking-tight text-white text-sm">Alteo Edits</span>
+                    <span class="text-[10px] text-slate-400 font-medium">Community Service</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-1 text-sm font-medium">
+                <button onclick="router.navigate('home')" id="nav-btn-home" class="px-3 py-1.5 rounded-lg transition-colors hover:bg-dark-700 text-slate-300">Home</button>
+                <button onclick="guardedNavigate('order')" id="nav-btn-order" class="px-3 py-1.5 rounded-lg transition-colors hover:bg-dark-700 text-slate-300">New Order</button>
+                <button onclick="guardedNavigate('my-orders')" id="nav-btn-my-orders" class="px-3 py-1.5 rounded-lg transition-colors hover:bg-dark-700 text-slate-300">My Orders</button>
+                <button onclick="guardedNavigate('service-dm')" id="nav-btn-service-dm" class="px-3 py-1.5 rounded-lg transition-colors hover:bg-dark-700 text-slate-300 flex items-center space-x-1.5">
+                    <span>Service DMs</span>
+                    <span id="unread-dm-badge" class="hidden px-1.5 py-0.2 rounded-full text-[10px] bg-brand text-white font-bold">0</span>
+                </button>
+                <button onclick="checkAdminPortal()" id="nav-btn-admin" class="hidden px-3 py-1.5 rounded-lg transition-colors hover:bg-dark-700 text-purple-400 font-semibold">Admin Panel</button>
+            </nav>
+
+            <!-- Auth Controls -->
+            <div class="flex items-center space-x-2">
+                <div id="auth-header-guest" class="flex items-center space-x-2">
+                    <button onclick="router.navigate('login')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-dark-700 hover:bg-dark-600 text-slate-200 border border-dark-600">Log In</button>
+                    <button onclick="router.navigate('signup')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand hover:bg-brand-hover text-white">Sign Up</button>
+                </div>
+                <div id="auth-header-user" class="hidden flex items-center space-x-2.5">
+                    <div class="flex flex-col text-right">
+                        <span id="header-username" class="text-xs font-bold text-white"></span>
+                        <span id="header-role" class="text-[9px] text-brand font-medium uppercase">Customer</span>
+                    </div>
+                    <button onclick="handleLogout()" class="px-2.5 py-1 rounded-lg bg-dark-700 hover:bg-red-950/50 text-slate-300 hover:text-red-300 text-xs border border-dark-600">Log Out</button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden p-1.5 rounded-lg bg-dark-700 text-slate-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-dark-800 border-b border-dark-600 px-4 py-2 space-y-1">
+            <button onclick="router.navigate('home'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded text-sm text-slate-200 hover:bg-dark-700">Home</button>
+            <button onclick="guardedNavigate('order'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded text-sm text-slate-200 hover:bg-dark-700">New Order</button>
+            <button onclick="guardedNavigate('my-orders'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded text-sm text-slate-200 hover:bg-dark-700">My Orders</button>
+            <button onclick="guardedNavigate('service-dm'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded text-sm text-slate-200 hover:bg-dark-700">Service DMs</button>
+            <button onclick="checkAdminPortal(); toggleMobileMenu();" id="mobile-admin-btn" class="hidden block w-full text-left px-3 py-2 rounded text-sm text-purple-400 font-semibold">Admin Panel</button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-6">
+
+        <!-- VIEW: HOME -->
+        <div id="view-home" class="space-y-6 fade-in">
+            <div class="bg-dark-800 border border-dark-600 rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
+                <div class="space-y-3 max-w-xl">
+                    <div class="inline-block px-2.5 py-0.5 rounded bg-dark-700 text-brand text-[11px] font-semibold tracking-wide uppercase border border-dark-600">Discord Community Edits</div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Professional Edits for Your Discord Community</h1>
+                    <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+                        Welcome to Alteo Edits. We produce clean JJK character edits and custom costume edits. Please log in or sign up to submit an order or chat with staff.
+                    </p>
+                    <div class="flex items-center gap-3 pt-1">
+                        <button onclick="guardedNavigate('order')" class="px-4 py-2 rounded-lg bg-brand hover:bg-brand-hover text-white font-semibold text-xs transition-all shadow">
+                            Start An Order
+                        </button>
+                        <button onclick="guardedNavigate('service-dm')" class="px-4 py-2 rounded-lg bg-dark-700 hover:bg-dark-600 text-slate-200 font-medium text-xs border border-dark-600 transition-all">
+                            Service DMs
+                        </button>
+                    </div>
+                </div>
+                <div class="w-32 h-32 md:w-40 md:h-40 flex-shrink-0">
+                    <img src="image_2.png" alt="Logo preview" class="w-full h-full object-cover rounded-xl border border-dark-600 shadow-inner">
+                </div>
+            </div>
+
+            <!-- Edit Services Cards -->
+            <div class="space-y-3">
+                <h2 class="text-base font-bold text-white tracking-tight">Select Edit Service</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- JJK Character Edit -->
+                    <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-dark-500 transition-all">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2 py-0.5 rounded bg-purple-950/60 border border-purple-800/40 text-purple-300 text-[10px] font-semibold">Specialized</span>
+                                <span class="text-xs font-bold text-white bg-dark-700 px-2.5 py-1 rounded border border-dark-600">3 Discord Members</span>
+                            </div>
+                            <h3 class="text-base font-bold text-white">JJK Character Edit</h3>
+                            <p class="text-slate-300 text-xs leading-relaxed">
+                                Custom Jujutsu Kaisen character edit styled to your precise aesthetic and pacing preference.
+                            </p>
+                        </div>
+                        <button onclick="selectAndOrder('JJK Character Edit')" class="w-full py-2.5 rounded-lg bg-dark-700 hover:bg-brand hover:text-white text-slate-200 text-xs font-semibold border border-dark-600 transition-all">
+                            Order JJK Edit
+                        </button>
+                    </div>
+
+                    <!-- Costume Edit -->
+                    <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-dark-500 transition-all">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2 py-0.5 rounded bg-orange-950/60 border border-orange-800/40 text-orange-300 text-[10px] font-semibold">Custom Design</span>
+                                <span class="text-xs font-bold text-white bg-dark-700 px-2.5 py-1 rounded border border-dark-600">6 Discord Members</span>
+                            </div>
+                            <h3 class="text-base font-bold text-white">Costume Edit</h3>
+                            <p class="text-slate-300 text-xs leading-relaxed">
+                                Detailed costume editing service tailored to your precise description and reference imagery.
+                            </p>
+                        </div>
+                        <button onclick="selectAndOrder('Costume Edit')" class="w-full py-2.5 rounded-lg bg-dark-700 hover:bg-brand hover:text-white text-slate-200 text-xs font-semibold border border-dark-600 transition-all">
+                            Order Costume Edit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: SIGN UP -->
+        <div id="view-signup" class="max-w-sm mx-auto space-y-4 fade-in hidden">
+            <div class="bg-dark-800 border border-dark-600 rounded-xl p-6 space-y-4 shadow-lg">
+                <div class="text-center space-y-1">
+                    <img src="image_2.png" alt="Logo" class="w-10 h-10 rounded-lg object-cover border border-dark-600 mx-auto">
+                    <h1 class="text-lg font-bold text-white">Create Account</h1>
+                    <p class="text-slate-400 text-[11px]">Sign up to place and track orders.</p>
+                </div>
+                <form onsubmit="handleSignupSubmit(event)" class="space-y-3">
+                    <div class="space-y-1">
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Discord Username</label>
+                        <input type="text" id="signup-username" required placeholder="e.g. satoru#0001" class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Password</label>
+                        <input type="password" id="signup-password" required placeholder="Password..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand">
+                    </div>
+                    <div id="signup-error" class="hidden text-red-400 text-[11px] font-medium"></div>
+                    <button type="submit" class="w-full py-2.5 rounded-lg bg-brand hover:bg-brand-hover text-white font-semibold text-xs transition-all">Sign Up</button>
+                    <p class="text-center text-[11px] text-slate-400 pt-1">
+                        Already have an account? <a href="#" onclick="router.navigate('login')" class="text-brand hover:underline">Log in</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+
+        <!-- VIEW: LOG IN -->
+        <div id="view-login" class="max-w-sm mx-auto space-y-4 fade-in hidden">
+            <div class="bg-dark-800 border border-dark-600 rounded-xl p-6 space-y-4 shadow-lg">
+                <div class="text-center space-y-1">
+                    <img src="image_2.png" alt="Logo" class="w-10 h-10 rounded-lg object-cover border border-dark-600 mx-auto">
+                    <h1 class="text-lg font-bold text-white">Log In</h1>
+                    <p class="text-slate-400 text-[11px]">Access your orders and service DMs.</p>
+                </div>
+                <form onsubmit="handleLoginSubmit(event)" class="space-y-3">
+                    <div class="space-y-1">
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Username</label>
+                        <input type="text" id="login-username" required placeholder="Username..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Password</label>
+                        <input type="password" id="login-password" required placeholder="Password..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand">
+                    </div>
+                    <div id="login-error" class="hidden text-red-400 text-[11px] font-medium"></div>
+                    <button type="submit" class="w-full py-2.5 rounded-lg bg-brand hover:bg-brand-hover text-white font-semibold text-xs transition-all">Log In</button>
+                    <p class="text-center text-[11px] text-slate-400 pt-1">
+                        Need an account? <a href="#" onclick="router.navigate('signup')" class="text-brand hover:underline">Sign up</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+
+        <!-- VIEW: ORDER FORM -->
+        <div id="view-order" class="max-w-2xl mx-auto space-y-6 fade-in hidden">
+            <div class="space-y-1">
+                <h1 class="text-xl font-bold text-white tracking-tight">Submit New Edit Order</h1>
+                <p class="text-slate-400 text-xs">Fill out the specifications for your requested edit.</p>
+            </div>
+
+            <form id="order-form" onsubmit="handleOrderSubmit(event)" class="bg-dark-800 border border-dark-600 rounded-xl p-6 space-y-4 shadow-lg">
+                <div class="space-y-1">
+                    <label class="block text-xs font-semibold text-slate-200">Select Edit Type <span class="text-red-400">*</span></label>
+                    <select id="edit-type" onchange="updateFormFields()" required class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-brand font-medium">
+                        <option value="JJK Character Edit">JJK Character Edit (3 Discord Members)</option>
+                        <option value="Costume Edit">Costume Edit (6 Discord Members)</option>
+                    </select>
+                </div>
+
+                <div id="dynamic-fields" class="space-y-4"></div>
+
+                <div class="space-y-1">
+                    <label class="block text-xs font-semibold text-slate-200">Discord Username <span class="text-red-400">*</span></label>
+                    <input type="text" id="discord-username" required placeholder="e.g. satoru#0001" class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-brand">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-xs font-semibold text-slate-200">Extra Instructions (Optional)</label>
+                    <textarea id="extra-instructions" rows="2" placeholder="Any specific notes or preferences..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand resize-none"></textarea>
+                </div>
+
+                <div class="pt-2 border-t border-dark-700 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] text-slate-400 block font-medium uppercase">Price</span>
+                        <span id="order-price-display" class="text-sm font-bold text-white">3 Discord Members</span>
+                    </div>
+                    <button type="submit" class="px-5 py-2.5 rounded-lg bg-brand hover:bg-brand-hover text-white font-semibold text-xs transition-all shadow">
+                        Submit Order
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- VIEW: ORDER CONFIRMATION -->
+        <div id="view-confirmation" class="max-w-md mx-auto space-y-4 fade-in hidden">
+            <div class="bg-dark-800 border border-dark-600 rounded-xl p-6 text-center space-y-4 shadow-lg">
+                <div class="w-12 h-12 rounded-full bg-green-950/60 border border-green-800 text-green-400 flex items-center justify-center mx-auto text-lg font-bold">✓</div>
+                <div class="space-y-1">
+                    <h1 class="text-lg font-bold text-white">Order Submitted Successfully</h1>
+                    <p class="text-slate-400 text-xs">You can track this order in "My Orders".</p>
+                </div>
+
+                <div class="bg-dark-700/60 border border-dark-600 rounded-lg p-3 text-left space-y-2 text-xs">
+                    <div class="flex justify-between items-center pb-1.5 border-b border-dark-600">
+                        <span class="text-slate-400">Order ID</span>
+                        <span id="conf-order-id" class="font-mono font-bold text-brand"></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400">Edit Type</span>
+                        <span id="conf-edit-type" class="font-semibold text-white"></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400">Price</span>
+                        <span id="conf-price" class="font-semibold text-white"></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400">Status</span>
+                        <span id="conf-status" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-950/60 text-amber-300 border border-amber-800/40">Pending</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-1">
+                    <button onclick="router.navigate('my-orders')" class="flex-1 py-2.5 rounded-lg bg-brand hover:bg-brand-hover text-white font-semibold text-xs transition-all">View My Orders</button>
+                    <button onclick="router.navigate('home')" class="flex-1 py-2.5 rounded-lg bg-dark-700 hover:bg-dark-600 text-slate-300 font-semibold text-xs border border-dark-600 transition-all">Home</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: MY ORDERS -->
+        <div id="view-my-orders" class="max-w-3xl mx-auto space-y-4 fade-in hidden">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-xl font-bold text-white tracking-tight">My Orders</h1>
+                    <p class="text-slate-400 text-xs">Track your submitted edit requests.</p>
+                </div>
+                <button onclick="router.navigate('order')" class="px-3 py-1.5 rounded-lg bg-brand hover:bg-brand-hover text-white text-xs font-semibold">New Order</button>
+            </div>
+
+            <div id="my-orders-list" class="space-y-3"></div>
+            <div id="my-orders-empty" class="hidden bg-dark-800 border border-dark-600 rounded-xl p-8 text-center text-slate-400 text-xs">
+                No orders placed yet.
+            </div>
+        </div>
+
+        <!-- VIEW: SERVICE DM CHAT -->
+        <div id="view-service-dm" class="max-w-4xl mx-auto space-y-4 fade-in hidden">
+            <div class="space-y-1">
+                <h1 class="text-xl font-bold text-white tracking-tight">Service DM Chat</h1>
+                <p class="text-slate-400 text-xs">Direct communication with the Alteo editing team.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 bg-dark-800 border border-dark-600 rounded-xl shadow-lg overflow-hidden min-h-[420px]">
+                <div class="border-r border-dark-700 bg-dark-800 flex flex-col">
+                    <div class="p-3 border-b border-dark-700 bg-dark-700/50">
+                        <span id="dm-sidebar-title" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Conversations</span>
+                    </div>
+                    <div id="dm-threads-list" class="divide-y divide-dark-700 overflow-y-auto flex-1"></div>
+                </div>
+                <div class="md:col-span-2 flex flex-col justify-between bg-dark-800/40">
+                    <div class="p-3 border-b border-dark-700 bg-dark-700/30">
+                        <span id="dm-active-chat-title" class="text-xs font-bold text-white">Select conversation</span>
+                    </div>
+                    <div id="dm-messages-container" class="p-3 space-y-3 overflow-y-auto flex-1 max-h-[300px]">
+                        <div class="text-center text-slate-500 py-16 text-xs">Select a conversation.</div>
+                    </div>
+                    <form id="dm-input-form" onsubmit="handleSendDM(event)" class="p-3 border-t border-dark-700 bg-dark-800 flex gap-2 hidden">
+                        <input type="text" id="dm-message-input" required placeholder="Type message..." class="flex-1 bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand">
+                        <button type="submit" class="px-4 py-2 rounded-lg bg-brand hover:bg-brand-hover text-white text-xs font-semibold">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: ADMIN DASHBOARD (Sidebar Layout) -->
+        <div id="view-admin-dashboard" class="space-y-4 fade-in hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 min-h-[550px]">
+                <!-- Admin Sidebar -->
+                <div class="lg:col-span-1 bg-dark-800 border border-dark-600 rounded-xl p-3 flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-2.5 px-2 py-2 border-b border-dark-700">
+                            <img src="image_2.png" alt="Logo" class="w-7 h-7 rounded object-cover">
+                            <div>
+                                <span class="font-bold text-white text-xs block">Alteo Staff</span>
+                                <span class="text-[9px] text-purple-400 font-semibold">Administrator</span>
+                            </div>
+                        </div>
+                        <nav class="space-y-1 text-xs">
+                            <button onclick="switchAdminTab('dashboard')" id="admin-tab-btn-dashboard" class="w-full text-left px-3 py-2 rounded-lg font-medium bg-brand text-white">Dashboard</button>
+                            <button onclick="switchAdminTab('orders')" id="admin-tab-btn-orders" class="w-full text-left px-3 py-2 rounded-lg font-medium text-slate-300 hover:bg-dark-700">Orders</button>
+                            <button onclick="switchAdminTab('messages')" id="admin-tab-btn-messages" class="w-full text-left px-3 py-2 rounded-lg font-medium text-slate-300 hover:bg-dark-700">Messages</button>
+                            <button onclick="switchAdminTab('customers')" id="admin-tab-btn-customers" class="w-full text-left px-3 py-2 rounded-lg font-medium text-slate-300 hover:bg-dark-700">Customers</button>
+                            <button onclick="switchAdminTab('settings')" id="admin-tab-btn-settings" class="w-full text-left px-3 py-2 rounded-lg font-medium text-slate-300 hover:bg-dark-700">Settings</button>
+                        </nav>
+                    </div>
+                    <div class="pt-2 border-t border-dark-700">
+                        <button onclick="adminLogout()" class="w-full py-2 rounded-lg bg-dark-700 hover:bg-red-950/50 text-slate-300 hover:text-red-300 text-xs border border-dark-600">Log Out</button>
+                    </div>
+                </div>
+
+                <!-- Admin Content Panel -->
+                <div class="lg:col-span-4 space-y-4">
+                    <!-- Tab: Dashboard -->
+                    <div id="admin-tab-dashboard" class="space-y-4">
+                        <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 shadow">
+                            <h2 class="text-base font-bold text-white">Dashboard Overview</h2>
+                            <p class="text-slate-400 text-xs mt-0.5">Order statistics and member payouts.</p>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 space-y-1">
+                                <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Orders</span>
+                                <div id="stat-total-orders" class="text-2xl font-extrabold text-white">0</div>
+                            </div>
+                            <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 space-y-1">
+                                <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Members Owed</span>
+                                <div id="stat-members-owed" class="text-2xl font-extrabold text-brand">0</div>
+                            </div>
+                            <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 space-y-1">
+                                <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">JJK Orders</span>
+                                <div id="stat-jjk-orders" class="text-2xl font-extrabold text-purple-400">0</div>
+                            </div>
+                            <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 space-y-1">
+                                <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Costume Orders</span>
+                                <div id="stat-costume-orders" class="text-2xl font-extrabold text-orange-400">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Orders -->
+                    <div id="admin-tab-orders" class="space-y-3 hidden">
+                        <div class="bg-dark-800 border border-dark-600 rounded-xl p-3 flex flex-col sm:flex-row gap-3 items-center justify-between">
+                            <input type="text" id="admin-search" oninput="renderAdminOrdersTable()" placeholder="Search orders..." class="w-full sm:w-64 bg-dark-700 border border-dark-600 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-brand">
+                            <div class="flex items-center gap-2 w-full sm:w-auto">
+                                <select id="admin-filter-type" onchange="renderAdminOrdersTable()" class="bg-dark-700 border border-dark-600 rounded-lg px-2.5 py-1.5 text-xs text-slate-200">
+                                    <option value="">All Types</option>
+                                    <option value="JJK Character Edit">JJK</option>
+                                    <option value="Costume Edit">Costume</option>
+                                </select>
+                                <select id="admin-filter-status" onchange="renderAdminOrdersTable()" class="bg-dark-700 border border-dark-600 rounded-lg px-2.5 py-1.5 text-xs text-slate-200">
+                                    <option value="">All Statuses</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Finished">Finished</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="bg-dark-800 border border-dark-600 rounded-xl overflow-hidden shadow">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-xs">
+                                    <thead>
+                                        <tr class="bg-dark-700/80 border-b border-dark-600 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                                            <th class="p-3">ID</th>
+                                            <th class="p-3">Discord</th>
+                                            <th class="p-3">Type</th>
+                                            <th class="p-3">Price</th>
+                                            <th class="p-3">Status</th>
+                                            <th class="p-3 text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-orders-tbody" class="divide-y divide-dark-700 text-slate-300"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Messages -->
+                    <div id="admin-tab-messages" class="space-y-3 hidden">
+                        <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 shadow space-y-3">
+                            <h2 class="text-base font-bold text-white">Customer Support Messages</h2>
+                            <div id="admin-messages-panel" class="grid grid-cols-1 md:grid-cols-3 gap-3 border border-dark-700 rounded-lg overflow-hidden min-h-[360px]">
+                                <div class="border-r border-dark-700 bg-dark-800 overflow-y-auto max-h-[360px]" id="admin-dm-threads"></div>
+                                <div class="md:col-span-2 flex flex-col justify-between bg-dark-800/60">
+                                    <div id="admin-dm-chat-title" class="p-2.5 border-b border-dark-700 text-xs font-bold text-slate-400">Select thread</div>
+                                    <div id="admin-dm-messages" class="p-3 space-y-2 overflow-y-auto max-h-[270px] flex-1 text-xs"></div>
+                                    <form id="admin-dm-form" onsubmit="handleAdminSendDM(event)" class="p-2.5 border-t border-dark-700 flex gap-2 hidden">
+                                        <input type="text" id="admin-dm-input" required placeholder="Reply..." class="flex-1 bg-dark-700 border border-dark-600 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-brand">
+                                        <button type="submit" class="px-3 py-1.5 rounded-lg bg-brand hover:bg-brand-hover text-white text-xs font-semibold">Reply</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Customers -->
+                    <div id="admin-tab-customers" class="space-y-3 hidden">
+                        <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 shadow space-y-3">
+                            <h2 class="text-base font-bold text-white">Registered Users</h2>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-xs">
+                                    <thead>
+                                        <tr class="bg-dark-700/80 border-b border-dark-600 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                                            <th class="p-3">Username</th>
+                                            <th class="p-3">Role</th>
+                                            <th class="p-3">Joined</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-customers-tbody" class="divide-y divide-dark-700 text-slate-300"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Settings -->
+                    <div id="admin-tab-settings" class="space-y-3 hidden">
+                        <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 shadow space-y-3">
+                            <h2 class="text-base font-bold text-white">Database Settings</h2>
+                            <button onclick="resetLocalDatabase()" class="px-3 py-2 rounded-lg bg-red-950/50 hover:bg-red-900/60 text-red-300 text-xs border border-red-900/50">
+                                Reset Database to Defaults
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Order Details Modal -->
+    <div id="order-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-dark-800 border border-dark-600 rounded-xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative fade-in">
+            <div class="flex items-center justify-between border-b border-dark-700 pb-3">
+                <div>
+                    <span id="modal-order-id" class="text-[11px] font-mono font-bold text-brand uppercase"></span>
+                    <h2 class="text-base font-bold text-white">Order Details</h2>
+                </div>
+                <button onclick="closeOrderModal()" class="w-7 h-7 rounded bg-dark-700 hover:bg-dark-600 text-slate-400 hover:text-white flex items-center justify-center text-xs">✕</button>
+            </div>
+            <div id="modal-content-body" class="space-y-2 text-xs"></div>
+            <div class="border-t border-dark-700 pt-3 flex items-center justify-between" id="modal-admin-actions">
+                <div class="flex items-center space-x-2">
+                    <span class="text-[11px] text-slate-400">Status:</span>
+                    <select id="modal-status-select" onchange="modalUpdateStatus()" class="bg-dark-700 border border-dark-600 rounded px-2.5 py-1 text-xs text-slate-200">
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Finished">Finished</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <button onclick="modalDeleteOrder()" class="px-3 py-1.5 rounded bg-red-950/50 hover:bg-red-900/60 text-red-300 text-xs border border-red-900/50">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark-800 border-t border-dark-600 py-4 mt-12">
+        <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
+            <div class="flex items-center space-x-2">
+                <img src="image_2.png" alt="Logo" class="w-5 h-5 rounded object-cover border border-dark-600">
+                <span>&copy; 2026 Alteo Edit Services. All rights reserved.</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button onclick="router.navigate('home')" class="hover:text-white">Home</button>
+                <button onclick="guardedNavigate('order')" class="hover:text-white">New Order</button>
+                <button onclick="guardedNavigate('service-dm')" class="hover:text-white">Service DMs</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        const INITIAL_ORDERS = [
+            {
+                id: "ALT-7821",
+                discordUsername: "satoru#0001",
+                editType: "JJK Character Edit",
+                price: "3 Discord Members",
+                character: "Gojo Satoru",
+                style: "Cyberpunk neon glow with heavy bass sync",
+                extraInstructions: "Make infinity domain flash cyan.",
+                status: "In Progress",
+                createdAt: "2026-04-01 14:32",
+                updatedAt: "2026-04-02 10:15"
+            },
+            {
+                id: "ALT-4912",
+                discordUsername: "yuji_tiger#9999",
+                editType: "Costume Edit",
+                price: "6 Discord Members",
+                costumeDescription: "Traditional samurai armor with purple cursed energy.",
+                references: "https://placehold.co/600x400/252b38/ffffff?text=Reference",
+                extraInstructions: "Include slow-mo sword draw.",
+                status: "Pending",
+                createdAt: "2026-04-03 18:45",
+                updatedAt: "2026-04-03 18:45"
+            }
+        ];
+
+        const INITIAL_USERS = [
+            { username: "Alteo", password: "Alteo2011", role: "admin", createdAt: "2026-01-01 00:00" },
+            { username: "satoru#0001", password: "password123", role: "customer", createdAt: "2026-04-01 14:00" },
+            { username: "yuji_tiger#9999", password: "password123", role: "customer", createdAt: "2026-04-03 18:00" }
+        ];
+
+        const INITIAL_MESSAGES = [
+            { id: "MSG-1", sender: "satoru#0001", recipient: "Alteo", text: "Hey Alteo, when will my Gojo edit be ready?", timestamp: "2026-04-02 11:00", read: false },
+            { id: "MSG-2", sender: "Alteo", recipient: "satoru#0001", text: "Working on the domain expansion VFX now!", timestamp: "2026-04-02 11:15", read: true }
+        ];
+
+        function getOrders() {
+            const data = localStorage.getItem('alteo_orders');
+            if (!data) {
+                localStorage.setItem('alteo_orders', JSON.stringify(INITIAL_ORDERS));
+                return INITIAL_ORDERS;
+            }
+            try { return JSON.parse(data); } catch (e) { return INITIAL_ORDERS; }
+        }
+
+        function saveOrders(orders) {
+            localStorage.setItem('alteo_orders', JSON.stringify(orders));
+        }
+
+        function getUsers() {
+            const data = localStorage.getItem('alteo_users');
+            if (!data) {
+                localStorage.setItem('alteo_users', JSON.stringify(INITIAL_USERS));
+                return INITIAL_USERS;
+            }
+            try { return JSON.parse(data); } catch (e) { return INITIAL_USERS; }
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem('alteo_users', JSON.stringify(users));
+        }
+
+        function getMessages() {
+            const data = localStorage.getItem('alteo_messages');
+            if (!data) {
+                localStorage.setItem('alteo_messages', JSON.stringify(INITIAL_MESSAGES));
+                return INITIAL_MESSAGES;
+            }
+            try { return JSON.parse(data); } catch (e) { return INITIAL_MESSAGES; }
+        }
+
+        function saveMessages(msgs) {
+            localStorage.setItem('alteo_messages', JSON.stringify(msgs));
+        }
+
+        function getCurrentUser() {
+            const userStr = sessionStorage.getItem('alteo_current_user');
+            if (!userStr) return null;
+            try { return JSON.parse(userStr); } catch (e) { return null; }
+        }
+
+        function setCurrentUser(user) {
+            if (!user) sessionStorage.removeItem('alteo_current_user');
+            else sessionStorage.setItem('alteo_current_user', JSON.stringify(user));
+            updateAuthHeader();
+        }
+
+        function updateAuthHeader() {
+            const user = getCurrentUser();
+            const guestDiv = document.getElementById('auth-header-guest');
+            const userDiv = document.getElementById('auth-header-user');
+            const usernameSpan = document.getElementById('header-username');
+            const roleSpan = document.getElementById('header-role');
+            const adminBtn = document.getElementById('nav-btn-admin');
+            const mobileAdminBtn = document.getElementById('mobile-admin-btn');
+
+            if (user) {
+                guestDiv.classList.add('hidden');
+                userDiv.classList.remove('hidden');
+                usernameSpan.textContent = user.username;
+                roleSpan.textContent = user.role === 'admin' ? 'Administrator' : 'Customer';
+
+                if (user.role === 'admin') {
+                    adminBtn.classList.remove('hidden');
+                    mobileAdminBtn.classList.remove('hidden');
+                } else {
+                    adminBtn.classList.add('hidden');
+                    mobileAdminBtn.classList.add('hidden');
+                }
+            } else {
+                guestDiv.classList.remove('hidden');
+                userDiv.classList.add('hidden');
+                adminBtn.classList.add('hidden');
+                mobileAdminBtn.classList.add('hidden');
+            }
+            updateUnreadDmBadge();
+        }
+
+        function updateUnreadDmBadge() {
+            const user = getCurrentUser();
+            const badge = document.getElementById('unread-dm-badge');
+            if (!user) {
+                badge.classList.add('hidden');
+                return;
+            }
+            const msgs = getMessages();
+            const unreadCount = msgs.filter(m => m.recipient === user.username && !m.read).length;
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        const router = {
+            current: 'home',
+            navigate(viewName) {
+                const user = getCurrentUser();
+                if (viewName === 'admin-dashboard') {
+                    if (!user || user.role !== 'admin') {
+                        router.navigate('login');
+                        return;
+                    }
+                }
+
+                this.current = viewName;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                const views = ['home', 'signup', 'login', 'order', 'confirmation', 'my-orders', 'service-dm', 'admin-dashboard'];
+                views.forEach(v => {
+                    const el = document.getElementById(`view-${v}`);
+                    if (el) el.classList.add('hidden');
+                });
+
+                const target = document.getElementById(`view-${viewName}`);
+                if (target) target.classList.remove('hidden');
+
+                if (viewName === 'order') initOrderForm();
+                if (viewName === 'my-orders') renderMyOrders();
+                if (viewName === 'service-dm') initServiceDM();
+                if (viewName === 'admin-dashboard') initAdminDashboard();
+            }
+        };
+
+        function guardedNavigate(viewName) {
+            const user = getCurrentUser();
+            if (!user) {
+                alert("You must log in or sign up before accessing this page.");
+                router.navigate('login');
+                return;
+            }
+            router.navigate(viewName);
+        }
+
+        function checkAdminPortal() {
+            const user = getCurrentUser();
+            if (user && user.role === 'admin') {
+                router.navigate('admin-dashboard');
+            } else {
+                router.navigate('login');
+            }
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        function handleSignupSubmit(e) {
+            e.preventDefault();
+            const username = document.getElementById('signup-username').value.trim();
+            const password = document.getElementById('signup-password').value;
+            const errEl = document.getElementById('signup-error');
+
+            const users = getUsers();
+            if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+                errEl.textContent = "Username already taken.";
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+            const newUser = { username, password, role: 'customer', createdAt: dateStr };
+            users.push(newUser);
+            saveUsers(users);
+
+            setCurrentUser(newUser);
+            router.navigate('home');
+        }
+
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('login-username').value.trim();
+            const passwordInput = document.getElementById('login-password').value;
+            const errEl = document.getElementById('login-error');
+
+            const users = getUsers();
+            const found = users.find(u => u.username.toLowerCase() === usernameInput.toLowerCase() && u.password === passwordInput);
+
+            if (!found) {
+                errEl.textContent = "Invalid username or password.";
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            setCurrentUser(found);
+            if (found.role === 'admin') {
+                router.navigate('admin-dashboard');
+            } else {
+                router.navigate('home');
+            }
+        }
+
+        function handleLogout() {
+            setCurrentUser(null);
+            router.navigate('home');
+        }
+
+        function selectAndOrder(editType) {
+            const user = getCurrentUser();
+            if (!user) {
+                alert("You must log in or sign up before placing an order.");
+                router.navigate('login');
+                return;
+            }
+            router.navigate('order');
+            const selectEl = document.getElementById('edit-type');
+            if (selectEl) {
+                selectEl.value = editType;
+                updateFormFields();
+            }
+        }
+
+        function initOrderForm() {
+            updateFormFields();
+            const user = getCurrentUser();
+            if (user && user.role !== 'admin') {
+                document.getElementById('discord-username').value = user.username;
+            }
+        }
+
+        function updateFormFields() {
+            const editType = document.getElementById('edit-type').value;
+            const container = document.getElementById('dynamic-fields');
+            const priceDisplay = document.getElementById('order-price-display');
+
+            if (editType === 'JJK Character Edit') {
+                priceDisplay.textContent = '3 Discord Members';
+                container.innerHTML = `
+                    <div class="space-y-1">
+                        <label class="block text-xs font-semibold text-slate-200">JJK Character Desired <span class="text-red-400">*</span></label>
+                        <input type="text" id="field-character" required placeholder="e.g. Satoru Gojo..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-xs font-semibold text-slate-200">Style Description <span class="text-red-400">*</span></label>
+                        <textarea id="field-style" required rows="2" placeholder="Describe aesthetic, color grading, or transitions..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand resize-none"></textarea>
+                    </div>
+                `;
+            } else {
+                priceDisplay.textContent = '6 Discord Members';
+                container.innerHTML = `
+                    <div class="space-y-1">
+                        <label class="block text-xs font-semibold text-slate-200">Costume Description <span class="text-red-400">*</span></label>
+                        <textarea id="field-costumedesc" required rows="2" placeholder="Describe outfit or attire..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand resize-none"></textarea>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-xs font-semibold text-slate-200">References or Image URL (Optional)</label>
+                        <input type="url" id="field-references" placeholder="https://imgur.com/..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand">
+                    </div>
+                `;
+            }
+        }
+
+        function handleOrderSubmit(e) {
+            e.preventDefault();
+            const editType = document.getElementById('edit-type').value;
+            const discordUsername = document.getElementById('discord-username').value.trim();
+            const extraInstructions = document.getElementById('extra-instructions').value.trim();
+
+            if (!discordUsername) {
+                alert("Discord username is required.");
+                return;
+            }
+
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+            const orderId = 'ALT-' + Math.floor(1000 + Math.random() * 9000);
+
+            const newOrder = {
+                id: orderId,
+                discordUsername: discordUsername,
+                editType: editType,
+                price: editType === 'JJK Character Edit' ? '3 Discord Members' : '6 Discord Members',
+                extraInstructions: extraInstructions,
+                status: 'Pending',
+                createdAt: dateStr,
+                updatedAt: dateStr
+            };
+
+            if (editType === 'JJK Character Edit') {
+                newOrder.character = document.getElementById('field-character').value.trim();
+                newOrder.style = document.getElementById('field-style').value.trim();
+            } else {
+                newOrder.costumeDescription = document.getElementById('field-costumedesc').value.trim();
+                newOrder.references = document.getElementById('field-references').value.trim();
+            }
+
+            const orders = getOrders();
+            orders.unshift(newOrder);
+            saveOrders(orders);
+
+            document.getElementById('conf-order-id').textContent = orderId;
+            document.getElementById('conf-edit-type').textContent = editType;
+            document.getElementById('conf-price').textContent = newOrder.price;
+            document.getElementById('conf-status').textContent = newOrder.status;
+
+            document.getElementById('order-form').reset();
+            router.navigate('confirmation');
+        }
+
+        function renderMyOrders() {
+            const user = getCurrentUser();
+            if (!user) {
+                router.navigate('login');
+                return;
+            }
+
+            const container = document.getElementById('my-orders-list');
+            const emptyEl = document.getElementById('my-orders-empty');
+            const orders = getOrders();
+            const myOrders = user.role === 'admin' ? orders : orders.filter(o => o.discordUsername.toLowerCase() === user.username.toLowerCase());
+
+            if (myOrders.length === 0) {
+                container.innerHTML = '';
+                emptyEl.classList.remove('hidden');
+                return;
+            }
+
+            emptyEl.classList.add('hidden');
+            container.innerHTML = myOrders.map(o => {
+                let badgeClass = 'bg-amber-950/60 text-amber-300 border-amber-800/40';
+                if (o.status === 'In Progress') badgeClass = 'bg-blue-950/60 text-blue-300 border-blue-800/40';
+                if (o.status === 'Finished') badgeClass = 'bg-green-950/60 text-green-300 border-green-800/40';
+                if (o.status === 'Cancelled') badgeClass = 'bg-red-950/60 text-red-300 border-red-800/40';
+
+                return `
+                    <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2.5">
+                                <span class="font-mono font-bold text-brand text-xs">${escapeHtml(o.id)}</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-semibold border ${badgeClass}">${escapeHtml(o.status)}</span>
+                            </div>
+                            <h3 class="text-xs font-bold text-white">${escapeHtml(o.editType)}</h3>
+                            <p class="text-[10px] text-slate-400">Price: ${escapeHtml(o.price)} | Created: ${escapeHtml(o.createdAt)}</p>
+                        </div>
+                        <button onclick="openOrderModal('${o.id}')" class="px-3 py-1.5 rounded-lg bg-dark-700 hover:bg-dark-600 text-slate-200 text-xs font-medium border border-dark-600 self-start sm:self-auto">View Info</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        let activeDmUser = null;
+
+        function initServiceDM() {
+            const user = getCurrentUser();
+            if (!user) {
+                router.navigate('login');
+                return;
+            }
+
+            const threadsList = document.getElementById('dm-threads-list');
+            const messagesContainer = document.getElementById('dm-messages-container');
+            const form = document.getElementById('dm-input-form');
+            const titleEl = document.getElementById('dm-active-chat-title');
+            const sidebarTitle = document.getElementById('dm-sidebar-title');
+            const msgs = getMessages();
+
+            if (user.role === 'admin') {
+                sidebarTitle.textContent = "Customers";
+                const users = getUsers().filter(u => u.role !== 'admin');
+
+                if (users.length === 0) {
+                    threadsList.innerHTML = `<div class="p-3 text-[11px] text-slate-500 text-center">No customers.</div>`;
+                    return;
+                }
+
+                if (!activeDmUser) activeDmUser = users[0].username;
+
+                threadsList.innerHTML = users.map(c => `
+                    <div onclick="setActiveDmUser('${c.username}')" class="p-3 cursor-pointer hover:bg-dark-700/60 ${activeDmUser === c.username ? 'bg-dark-700 border-l-2 border-brand' : ''}">
+                        <span class="font-semibold text-white text-xs block">${escapeHtml(c.username)}</span>
+                    </div>
+                `).join('');
+
+                titleEl.textContent = `Chat with ${activeDmUser}`;
+                form.classList.remove('hidden');
+
+                const threadMsgs = msgs.filter(m => (m.sender === activeDmUser && m.recipient === 'Alteo') || (m.sender === 'Alteo' && m.recipient === activeDmUser));
+                renderMessagesInContainer(messagesContainer, threadMsgs, user.username);
+
+                msgs.forEach(m => { if (m.recipient === 'Alteo' && m.sender === activeDmUser) m.read = true; });
+                saveMessages(msgs);
+                updateUnreadDmBadge();
+
+            } else {
+                sidebarTitle.textContent = "Staff";
+                activeDmUser = 'Alteo';
+
+                threadsList.innerHTML = `
+                    <div class="p-3 bg-dark-700 border-l-2 border-brand">
+                        <span class="font-semibold text-white text-xs block">Alteo Team</span>
+                        <span class="text-[9px] text-brand">Support</span>
+                    </div>
+                `;
+
+                titleEl.textContent = `Chat with Alteo Team`;
+                form.classList.remove('hidden');
+
+                const threadMsgs = msgs.filter(m => (m.sender === user.username && m.recipient === 'Alteo') || (m.sender === 'Alteo' && m.recipient === user.username));
+                renderMessagesInContainer(messagesContainer, threadMsgs, user.username);
+
+                msgs.forEach(m => { if (m.recipient === user.username && m.sender === 'Alteo') m.read = true; });
+                saveMessages(msgs);
+                updateUnreadDmBadge();
+            }
+        }
+
+        function setActiveDmUser(username) {
+            activeDmUser = username;
+            initServiceDM();
+        }
+
+        function renderMessagesInContainer(container, messages, currentUsername) {
+            if (messages.length === 0) {
+                container.innerHTML = `<div class="text-center text-slate-500 py-12 text-xs">No messages yet.</div>`;
+                return;
+            }
+
+            container.innerHTML = messages.map(m => {
+                const isMe = m.sender === currentUsername;
+                return `
+                    <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+                        <div class="max-w-xs rounded-xl px-3 py-2 text-xs ${isMe ? 'bg-brand text-white rounded-br-none' : 'bg-dark-700 text-slate-200 rounded-bl-none border border-dark-600'}">
+                            <span class="text-[9px] opacity-70 block mb-0.5 font-semibold">${escapeHtml(m.sender)}</span>
+                            <p>${escapeHtml(m.text)}</p>
+                        </div>
+                        <span class="text-[8px] text-slate-500 mt-0.5">${escapeHtml(m.timestamp)}</span>
+                    </div>
+                `;
+            }).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function handleSendDM(e) {
+            e.preventDefault();
+            const input = document.getElementById('dm-message-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const user = getCurrentUser();
+            if (!user) return;
+
+            const recipient = user.role === 'admin' ? activeDmUser : 'Alteo';
+            const now = new Date();
+            const timestamp = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+
+            const newMsg = {
+                id: 'MSG-' + Date.now(),
+                sender: user.username,
+                recipient: recipient,
+                text: text,
+                timestamp: timestamp,
+                read: false
+            };
+
+            const msgs = getMessages();
+            msgs.push(newMsg);
+            saveMessages(msgs);
+
+            input.value = '';
+            initServiceDM();
+        }
+
+        function switchAdminTab(tabName) {
+            ['dashboard', 'orders', 'messages', 'customers', 'settings'].forEach(t => {
+                const tabEl = document.getElementById(`admin-tab-${t}`);
+                const btnEl = document.getElementById(`admin-tab-btn-${t}`);
+                if (tabEl) tabEl.classList.add('hidden');
+                if (btnEl) {
+                    btnEl.classList.remove('bg-brand', 'text-white');
+                    btnEl.classList.add('text-slate-300', 'hover:bg-dark-700');
+                }
+            });
+
+            const activeTab = document.getElementById(`admin-tab-${tabName}`);
+            const activeBtn = document.getElementById(`admin-tab-btn-${tabName}`);
+            if (activeTab) activeTab.classList.remove('hidden');
+            if (activeBtn) {
+                activeBtn.classList.add('bg-brand', 'text-white');
+                activeBtn.classList.remove('text-slate-300', 'hover:bg-dark-700');
+            }
+
+            if (tabName === 'dashboard') renderAdminStats();
+            if (tabName === 'orders') renderAdminOrdersTable();
+            if (tabName === 'messages') initAdminMessagesTab();
+            if (tabName === 'customers') renderAdminCustomersTable();
+        }
+
+        function initAdminDashboard() {
+            switchAdminTab('dashboard');
+        }
+
+        function renderAdminStats() {
+            const orders = getOrders();
+            let membersOwed = 0, jjkCount = 0, costumeCount = 0;
+
+            orders.forEach(o => {
+                if (o.status !== 'Cancelled') {
+                    if (o.editType === 'JJK Character Edit') { membersOwed += 3; jjkCount++; }
+                    else if (o.editType === 'Costume Edit') { membersOwed += 6; costumeCount++; }
+                }
+            });
+
+            document.getElementById('stat-total-orders').textContent = orders.length;
+            document.getElementById('stat-members-owed').textContent = membersOwed;
+            document.getElementById('stat-jjk-orders').textContent = jjkCount;
+            document.getElementById('stat-costume-orders').textContent = costumeCount;
+        }
+
+        function renderAdminOrdersTable() {
+            const orders = getOrders();
+            const search = document.getElementById('admin-search').value.toLowerCase();
+            const filterType = document.getElementById('admin-filter-type').value;
+            const filterStatus = document.getElementById('admin-filter-status').value;
+            const tbody = document.getElementById('admin-orders-tbody');
+
+            const filtered = orders.filter(o => {
+                const matchesSearch = o.id.toLowerCase().includes(search) || o.discordUsername.toLowerCase().includes(search);
+                const matchesType = !filterType || o.editType === filterType;
+                const matchesStatus = !filterStatus || o.status === filterStatus;
+                return matchesSearch && matchesType && matchesStatus;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">No orders found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(o => {
+                let badge = 'bg-amber-950/60 text-amber-300 border-amber-800/40';
+                if (o.status === 'In Progress') badge = 'bg-blue-950/60 text-blue-300 border-blue-800/40';
+                if (o.status === 'Finished') badge = 'bg-green-950/60 text-green-300 border-green-800/40';
+                if (o.status === 'Cancelled') badge = 'bg-red-950/60 text-red-300 border-red-800/40';
+
+                return `
+                    <tr class="hover:bg-dark-700/40">
+                        <td class="p-3 font-mono font-bold text-brand">${escapeHtml(o.id)}</td>
+                        <td class="p-3 font-medium text-white">${escapeHtml(o.discordUsername)}</td>
+                        <td class="p-3">${escapeHtml(o.editType)}</td>
+                        <td class="p-3 text-slate-400">${escapeHtml(o.price)}</td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-semibold border ${badge}">${escapeHtml(o.status)}</span></td>
+                        <td class="p-3 text-right">
+                            <button onclick="openOrderModal('${o.id}')" class="px-2.5 py-1 rounded bg-dark-700 hover:bg-dark-600 text-slate-200 text-xs border border-dark-600">View</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        let adminActiveChatUser = null;
+
+        function initAdminMessagesTab() {
+            const users = getUsers().filter(u => u.role !== 'admin');
+            const threadsEl = document.getElementById('admin-dm-threads');
+            const chatTitle = document.getElementById('admin-dm-chat-title');
+            const msgContainer = document.getElementById('admin-dm-messages');
+            const form = document.getElementById('admin-dm-form');
+
+            if (users.length === 0) {
+                threadsEl.innerHTML = `<div class="p-3 text-xs text-slate-500 text-center">No customers.</div>`;
+                return;
+            }
+
+            if (!adminActiveChatUser) adminActiveChatUser = users[0].username;
+
+            threadsEl.innerHTML = users.map(u => `
+                <div onclick="setAdminActiveChat('${u.username}')" class="p-2.5 cursor-pointer hover:bg-dark-700/60 ${adminActiveChatUser === u.username ? 'bg-dark-700 border-l-2 border-brand' : ''}">
+                    <span class="font-semibold text-white text-xs block">${escapeHtml(u.username)}</span>
+                </div>
+            `).join('');
+
+            chatTitle.textContent = `Chat with ${adminActiveChatUser}`;
+            form.classList.remove('hidden');
+
+            const msgs = getMessages();
+            const threadMsgs = msgs.filter(m => (m.sender === adminActiveChatUser && m.recipient === 'Alteo') || (m.sender === 'Alteo' && m.recipient === adminActiveChatUser));
+            renderMessagesInContainer(msgContainer, threadMsgs, 'Alteo');
+        }
+
+        function setAdminActiveChat(username) {
+            adminActiveChatUser = username;
+            initAdminMessagesTab();
+        }
+
+        function handleAdminSendDM(e) {
+            e.preventDefault();
+            const input = document.getElementById('admin-dm-input');
+            const text = input.value.trim();
+            if (!text || !adminActiveChatUser) return;
+
+            const now = new Date();
+            const timestamp = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+
+            const newMsg = {
+                id: 'MSG-' + Date.now(),
+                sender: 'Alteo',
+                recipient: adminActiveChatUser,
+                text: text,
+                timestamp: timestamp,
+                read: false
+            };
+
+            const msgs = getMessages();
+            msgs.push(newMsg);
+            saveMessages(msgs);
+
+            input.value = '';
+            initAdminMessagesTab();
+        }
+
+        function renderAdminCustomersTable() {
+            const users = getUsers();
+            const tbody = document.getElementById('admin-customers-tbody');
+
+            tbody.innerHTML = users.map(u => `
+                <tr class="hover:bg-dark-700/40">
+                    <td class="p-3 font-semibold text-white">${escapeHtml(u.username)}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-semibold ${u.role === 'admin' ? 'bg-purple-950/60 text-purple-300 border border-purple-800' : 'bg-dark-700 text-slate-300'}">${escapeHtml(u.role)}</span></td>
+                    <td class="p-3 text-slate-500">${escapeHtml(u.createdAt)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function resetLocalDatabase() {
+            if (confirm("Reset database to defaults?")) {
+                localStorage.removeItem('alteo_orders');
+                localStorage.removeItem('alteo_users');
+                localStorage.removeItem('alteo_messages');
+                alert("Database reset.");
+                initAdminDashboard();
+            }
+        }
+
+        function adminLogout() {
+            setCurrentUser(null);
+            router.navigate('home');
+        }
+
+        let currentModalOrderId = null;
+
+        function openOrderModal(orderId) {
+            const orders = getOrders();
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+
+            currentModalOrderId = orderId;
+            document.getElementById('modal-order-id').textContent = order.id;
+            document.getElementById('modal-status-select').value = order.status;
+
+            const user = getCurrentUser();
+            const adminActionsEl = document.getElementById('modal-admin-actions');
+            if (user && user.role === 'admin') {
+                adminActionsEl.classList.remove('hidden');
+            } else {
+                adminActionsEl.classList.add('hidden');
+            }
+
+            let specificHTML = '';
+            if (order.editType === 'JJK Character Edit') {
+                specificHTML = `
+                    <div class="flex justify-between py-1 border-b border-dark-700"><span class="text-slate-400">JJK Character:</span><span class="font-semibold text-white">${escapeHtml(order.character || '-')}</span></div>
+                    <div class="flex justify-between py-1 border-b border-dark-700"><span class="text-slate-400">Style:</span><span class="font-semibold text-white text-right max-w-xs">${escapeHtml(order.style || '-')}</span></div>
+                `;
+            } else {
+                specificHTML = `
+                    <div class="flex justify-between py-1 border-b border-dark-700"><span class="text-slate-400">Costume:</span><span class="font-semibold text-white text-right max-w-xs">${escapeHtml(order.costumeDescription || '-')}</span></div>
+                    <div class="flex justify-between py-1 border-b border-dark-700"><span class="text-slate-400">References:</span><span class="font-semibold text-brand">${order.references ? `<a href="${escapeHtml(order.references)}" target="_blank" class="underline">Link</a>` : 'None'}</span></div>
+                `;
+            }
+
+            document.getElementById('modal-content-body').innerHTML = `
+                <div class="space-y-1.5">
+                    <div class="flex justify-between py-1 border-b border-dark-700"><span class="text-slate-400">Discord:</span><span class="font-semibold text-white">${escapeHtml(order.discordUsername)}</span></div>
+                    <div class="flex justify-between py-1 border-b border-dark-700"><span class="text-slate-400">Edit Type:</span><span class="font-semibold text-white">${escapeHtml(order.editType)}</span></div>
+                    <div class="flex justify-between py-1 border-b border-dark-700"><span class="text-slate-400">Price:</span><span class="font-semibold text-white">${escapeHtml(order.price)}</span></div>
+                    ${specificHTML}
+                    <div class="flex justify-between py-1 border-b border-dark-700"><span class="text-slate-400">Extra:</span><span class="font-semibold text-white text-right max-w-xs">${escapeHtml(order.extraInstructions || 'None')}</span></div>
+                    <div class="flex justify-between py-1 text-[10px] text-slate-500"><span>Created: ${escapeHtml(order.createdAt)}</span><span>Updated: ${escapeHtml(order.updatedAt)}</span></div>
+                </div>
+            `;
+            document.getElementById('order-modal').classList.remove('hidden');
+        }
+
+        function closeOrderModal() {
+            document.getElementById('order-modal').classList.add('hidden');
+            currentModalOrderId = null;
+        }
+
+        function modalUpdateStatus() {
+            if (!currentModalOrderId) return;
+            const newStatus = document.getElementById('modal-status-select').value;
+            const orders = getOrders();
+            const index = orders.findIndex(o => o.id === currentModalOrderId);
+            if (index !== -1) {
+                orders[index].status = newStatus;
+                const now = new Date();
+                orders[index].updatedAt = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+                saveOrders(orders);
+                renderAdminOrdersTable();
+                renderAdminStats();
+            }
+        }
+
+        function modalDeleteOrder() {
+            if (!currentModalOrderId) return;
+            if (confirm("Delete order " + currentModalOrderId + "?")) {
+                let orders = getOrders();
+                orders = orders.filter(o => o.id !== currentModalOrderId);
+                saveOrders(orders);
+                closeOrderModal();
+                renderAdminOrdersTable();
+                renderAdminStats();
+                renderMyOrders();
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            getOrders();
+            getUsers();
+            getMessages();
+            updateAuthHeader();
+            router.navigate('home');
+        });
+    </script>
+</body>
+</html>
