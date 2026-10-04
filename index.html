@@ -6,6 +6,8 @@
     <title>Alteo Edit Services</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS SDK CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -35,33 +37,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0b0d10;
-            color: #cbd5e1;
-            overflow-x: hidden;
-        }
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #12151b;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #252b38;
-            border-radius: 3px;
-        }
-        .fade-in {
-            animation: fadeIn 0.15s ease-out forwards;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(2px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #0b0d10; color: #cbd5e1; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #12151b; }
+        ::-webkit-scrollbar-thumb { background: #252b38; border-radius: 3px; }
+        .fade-in { animation: fadeIn 0.15s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col bg-dark-900 text-slate-200 antialiased selection:bg-brand selection:text-white">
+
+    <!-- SUPABASE CONFIGURATION -->
+    <script>
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Replace with your Supabase Project URL
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Replace with your Supabase Anon Key
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
 
     <!-- Top Navigation Header -->
     <header class="sticky top-0 z-40 bg-dark-800/95 backdrop-blur border-b border-dark-600/60">
@@ -70,7 +61,7 @@
                 <img src="./image_2.png" alt="Alteo Edit Logo" class="w-8 h-8 rounded-md object-cover border border-dark-600 shadow-sm" onerror="this.src='https://placehold.co/32x32/1a1f29/ffffff?text=Alteo'">
                 <div class="flex flex-col">
                     <span class="font-bold tracking-tight text-white text-sm">Alteo Edits</span>
-                    <span class="text-[10px] text-slate-400 font-medium">Community Service</span>
+                    <span class="text-[10px] text-slate-400 font-medium">Cloud Global Service</span>
                 </div>
             </div>
 
@@ -100,14 +91,12 @@
                     <button onclick="handleLogout()" class="px-2.5 py-1 rounded-lg bg-dark-700 hover:bg-red-950/50 text-slate-300 hover:text-red-300 text-xs border border-dark-600">Log Out</button>
                 </div>
 
-                <!-- Mobile Menu Button -->
                 <button onclick="toggleMobileMenu()" class="md:hidden p-1.5 rounded-lg bg-dark-700 text-slate-300">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
             </div>
         </div>
 
-        <!-- Mobile Menu Dropdown -->
         <div id="mobile-menu" class="hidden md:hidden bg-dark-800 border-b border-dark-600 px-4 py-2 space-y-1">
             <button onclick="router.navigate('home'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded text-sm text-slate-200 hover:bg-dark-700">Home</button>
             <button onclick="guardedNavigate('order'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded text-sm text-slate-200 hover:bg-dark-700">New Order</button>
@@ -124,18 +113,14 @@
         <div id="view-home" class="space-y-6 fade-in">
             <div class="bg-dark-800 border border-dark-600 rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
                 <div class="space-y-3 max-w-xl">
-                    <div class="inline-block px-2.5 py-0.5 rounded bg-dark-700 text-brand text-[11px] font-semibold tracking-wide uppercase border border-dark-600">Discord Community Edits</div>
+                    <div class="inline-block px-2.5 py-0.5 rounded bg-dark-700 text-brand text-[11px] font-semibold tracking-wide uppercase border border-dark-600">Global Cloud Edits</div>
                     <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Professional Edits for Your Discord Community</h1>
                     <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
-                        Welcome to Alteo Edits. We produce clean JJK character edits and custom costume edits. Please log in or sign up to submit an order or chat with staff.
+                        Welcome to Alteo Edits. Connected live via Supabase database backend. Log in or sign up to submit real orders and global chats.
                     </p>
                     <div class="flex items-center gap-3 pt-1">
-                        <button onclick="guardedNavigate('order')" class="px-4 py-2 rounded-lg bg-brand hover:bg-brand-hover text-white font-semibold text-xs transition-all shadow">
-                            Start An Order
-                        </button>
-                        <button onclick="guardedNavigate('service-dm')" class="px-4 py-2 rounded-lg bg-dark-700 hover:bg-dark-600 text-slate-200 font-medium text-xs border border-dark-600 transition-all">
-                            Service DMs
-                        </button>
+                        <button onclick="guardedNavigate('order')" class="px-4 py-2 rounded-lg bg-brand hover:bg-brand-hover text-white font-semibold text-xs transition-all shadow">Start An Order</button>
+                        <button onclick="guardedNavigate('service-dm')" class="px-4 py-2 rounded-lg bg-dark-700 hover:bg-dark-600 text-slate-200 font-medium text-xs border border-dark-600 transition-all">Service DMs</button>
                     </div>
                 </div>
                 <div class="w-32 h-32 md:w-40 md:h-40 flex-shrink-0">
@@ -143,11 +128,9 @@
                 </div>
             </div>
 
-            <!-- Edit Services Cards -->
             <div class="space-y-3">
                 <h2 class="text-base font-bold text-white tracking-tight">Select Edit Service</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- JJK Character Edit -->
                     <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-dark-500 transition-all">
                         <div class="space-y-2">
                             <div class="flex items-center justify-between">
@@ -155,16 +138,11 @@
                                 <span class="text-xs font-bold text-white bg-dark-700 px-2.5 py-1 rounded border border-dark-600">3 Discord Members</span>
                             </div>
                             <h3 class="text-base font-bold text-white">JJK Character Edit</h3>
-                            <p class="text-slate-300 text-xs leading-relaxed">
-                                Custom Jujutsu Kaisen character edit styled to your precise aesthetic and pacing preference.
-                            </p>
+                            <p class="text-slate-300 text-xs leading-relaxed">Custom Jujutsu Kaisen character edit styled to your exact preference.</p>
                         </div>
-                        <button onclick="selectAndOrder('JJK Character Edit')" class="w-full py-2.5 rounded-lg bg-dark-700 hover:bg-brand hover:text-white text-slate-200 text-xs font-semibold border border-dark-600 transition-all">
-                            Order JJK Edit
-                        </button>
+                        <button onclick="selectAndOrder('JJK Character Edit')" class="w-full py-2.5 rounded-lg bg-dark-700 hover:bg-brand hover:text-white text-slate-200 text-xs font-semibold border border-dark-600 transition-all">Order JJK Edit</button>
                     </div>
 
-                    <!-- Costume Edit -->
                     <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-dark-500 transition-all">
                         <div class="space-y-2">
                             <div class="flex items-center justify-between">
@@ -172,13 +150,9 @@
                                 <span class="text-xs font-bold text-white bg-dark-700 px-2.5 py-1 rounded border border-dark-600">6 Discord Members</span>
                             </div>
                             <h3 class="text-base font-bold text-white">Costume Edit</h3>
-                            <p class="text-slate-300 text-xs leading-relaxed">
-                                Detailed costume editing service tailored to your precise description and reference imagery.
-                            </p>
+                            <p class="text-slate-300 text-xs leading-relaxed">Detailed costume editing service tailored to your precise description.</p>
                         </div>
-                        <button onclick="selectAndOrder('Costume Edit')" class="w-full py-2.5 rounded-lg bg-dark-700 hover:bg-brand hover:text-white text-slate-200 text-xs font-semibold border border-dark-600 transition-all">
-                            Order Costume Edit
-                        </button>
+                        <button onclick="selectAndOrder('Costume Edit')" class="w-full py-2.5 rounded-lg bg-dark-700 hover:bg-brand hover:text-white text-slate-200 text-xs font-semibold border border-dark-600 transition-all">Order Costume Edit</button>
                     </div>
                 </div>
             </div>
@@ -189,12 +163,12 @@
             <div class="bg-dark-800 border border-dark-600 rounded-xl p-6 space-y-4 shadow-lg">
                 <div class="text-center space-y-1">
                     <img src="./image_2.png" alt="Logo" class="w-10 h-10 rounded-lg object-cover border border-dark-600 mx-auto">
-                    <h1 class="text-lg font-bold text-white">Create Account</h1>
-                    <p class="text-slate-400 text-[11px]">Sign up to place and track orders.</p>
+                    <h1 class="text-lg font-bold text-white">Create Cloud Account</h1>
+                    <p class="text-slate-400 text-[11px]">Sign up to store global records.</p>
                 </div>
                 <form onsubmit="handleSignupSubmit(event)" class="space-y-3">
                     <div class="space-y-1">
-                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Discord Username</label>
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Username / Discord</label>
                         <input type="text" id="signup-username" required placeholder="e.g. satoru#0001" class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand">
                     </div>
                     <div class="space-y-1">
@@ -203,9 +177,7 @@
                     </div>
                     <div id="signup-error" class="hidden text-red-400 text-[11px] font-medium"></div>
                     <button type="submit" class="w-full py-2.5 rounded-lg bg-brand hover:bg-brand-hover text-white font-semibold text-xs transition-all">Sign Up</button>
-                    <p class="text-center text-[11px] text-slate-400 pt-1">
-                        Already have an account? <a href="#" onclick="router.navigate('login')" class="text-brand hover:underline">Log in</a>
-                    </p>
+                    <p class="text-center text-[11px] text-slate-400 pt-1">Already registered? <a href="#" onclick="router.navigate('login')" class="text-brand hover:underline">Log in</a></p>
                 </form>
             </div>
         </div>
@@ -215,8 +187,8 @@
             <div class="bg-dark-800 border border-dark-600 rounded-xl p-6 space-y-4 shadow-lg">
                 <div class="text-center space-y-1">
                     <img src="./image_2.png" alt="Logo" class="w-10 h-10 rounded-lg object-cover border border-dark-600 mx-auto">
-                    <h1 class="text-lg font-bold text-white">Log In</h1>
-                    <p class="text-slate-400 text-[11px]">Access your orders and service DMs.</p>
+                    <h1 class="text-lg font-bold text-white">Cloud Log In</h1>
+                    <p class="text-slate-400 text-[11px]">Access your global account.</p>
                 </div>
                 <form onsubmit="handleLoginSubmit(event)" class="space-y-3">
                     <div class="space-y-1">
@@ -229,9 +201,7 @@
                     </div>
                     <div id="login-error" class="hidden text-red-400 text-[11px] font-medium"></div>
                     <button type="submit" class="w-full py-2.5 rounded-lg bg-brand hover:bg-brand-hover text-white font-semibold text-xs transition-all">Log In</button>
-                    <p class="text-center text-[11px] text-slate-400 pt-1">
-                        Need an account? <a href="#" onclick="router.navigate('signup')" class="text-brand hover:underline">Sign up</a>
-                    </p>
+                    <p class="text-center text-[11px] text-slate-400 pt-1">Need an account? <a href="#" onclick="router.navigate('signup')" class="text-brand hover:underline">Sign up</a></p>
                 </form>
             </div>
         </div>
@@ -239,8 +209,8 @@
         <!-- VIEW: ORDER FORM -->
         <div id="view-order" class="max-w-2xl mx-auto space-y-6 fade-in hidden">
             <div class="space-y-1">
-                <h1 class="text-xl font-bold text-white tracking-tight">Submit New Edit Order</h1>
-                <p class="text-slate-400 text-xs">Fill out the specifications for your requested edit.</p>
+                <h1 class="text-xl font-bold text-white tracking-tight">Submit Global Edit Order</h1>
+                <p class="text-slate-400 text-xs">Fill out specifications saved directly to Supabase.</p>
             </div>
 
             <form id="order-form" onsubmit="handleOrderSubmit(event)" class="bg-dark-800 border border-dark-600 rounded-xl p-6 space-y-4 shadow-lg">
@@ -261,7 +231,7 @@
 
                 <div class="space-y-1">
                     <label class="block text-xs font-semibold text-slate-200">Extra Instructions (Optional)</label>
-                    <textarea id="extra-instructions" rows="2" placeholder="Any specific notes or preferences..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand resize-none"></textarea>
+                    <textarea id="extra-instructions" rows="2" placeholder="Notes..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand resize-none"></textarea>
                 </div>
 
                 <div class="pt-2 border-t border-dark-700 flex items-center justify-between">
@@ -269,9 +239,7 @@
                         <span class="text-[10px] text-slate-400 block font-medium uppercase">Price</span>
                         <span id="order-price-display" class="text-sm font-bold text-white">3 Discord Members</span>
                     </div>
-                    <button type="submit" class="px-5 py-2.5 rounded-lg bg-brand hover:bg-brand-hover text-white font-semibold text-xs transition-all shadow">
-                        Submit Order
-                    </button>
+                    <button type="submit" class="px-5 py-2.5 rounded-lg bg-brand hover:bg-brand-hover text-white font-semibold text-xs transition-all shadow">Submit Order</button>
                 </div>
             </form>
         </div>
@@ -281,27 +249,15 @@
             <div class="bg-dark-800 border border-dark-600 rounded-xl p-6 text-center space-y-4 shadow-lg">
                 <div class="w-12 h-12 rounded-full bg-green-950/60 border border-green-800 text-green-400 flex items-center justify-center mx-auto text-lg font-bold">✓</div>
                 <div class="space-y-1">
-                    <h1 class="text-lg font-bold text-white">Order Submitted Successfully</h1>
-                    <p class="text-slate-400 text-xs">You can track this order in "My Orders".</p>
+                    <h1 class="text-lg font-bold text-white">Order Saved to Database</h1>
+                    <p class="text-slate-400 text-xs">Visible instantly to staff.</p>
                 </div>
 
                 <div class="bg-dark-700/60 border border-dark-600 rounded-lg p-3 text-left space-y-2 text-xs">
-                    <div class="flex justify-between items-center pb-1.5 border-b border-dark-600">
-                        <span class="text-slate-400">Order ID</span>
-                        <span id="conf-order-id" class="font-mono font-bold text-brand"></span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-400">Edit Type</span>
-                        <span id="conf-edit-type" class="font-semibold text-white"></span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-400">Price</span>
-                        <span id="conf-price" class="font-semibold text-white"></span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-400">Status</span>
-                        <span id="conf-status" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-950/60 text-amber-300 border border-amber-800/40">Pending</span>
-                    </div>
+                    <div class="flex justify-between items-center pb-1.5 border-b border-dark-600"><span class="text-slate-400">Order ID</span><span id="conf-order-id" class="font-mono font-bold text-brand"></span></div>
+                    <div class="flex justify-between items-center"><span class="text-slate-400">Edit Type</span><span id="conf-edit-type" class="font-semibold text-white"></span></div>
+                    <div class="flex justify-between items-center"><span class="text-slate-400">Price</span><span id="conf-price" class="font-semibold text-white"></span></div>
+                    <div class="flex justify-between items-center"><span class="text-slate-400">Status</span><span id="conf-status" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-950/60 text-amber-300 border border-amber-800/40">Pending</span></div>
                 </div>
 
                 <div class="flex gap-3 pt-1">
@@ -316,35 +272,29 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-xl font-bold text-white tracking-tight">My Orders</h1>
-                    <p class="text-slate-400 text-xs">Track your submitted edit requests.</p>
+                    <p class="text-slate-400 text-xs">Fetched live from Supabase.</p>
                 </div>
                 <button onclick="router.navigate('order')" class="px-3 py-1.5 rounded-lg bg-brand hover:bg-brand-hover text-white text-xs font-semibold">New Order</button>
             </div>
 
             <div id="my-orders-list" class="space-y-3"></div>
-            <div id="my-orders-empty" class="hidden bg-dark-800 border border-dark-600 rounded-xl p-8 text-center text-slate-400 text-xs">
-                No orders placed yet.
-            </div>
+            <div id="my-orders-empty" class="hidden bg-dark-800 border border-dark-600 rounded-xl p-8 text-center text-slate-400 text-xs">No orders placed yet.</div>
         </div>
 
         <!-- VIEW: SERVICE DM CHAT -->
         <div id="view-service-dm" class="max-w-4xl mx-auto space-y-4 fade-in hidden">
             <div class="space-y-1">
                 <h1 class="text-xl font-bold text-white tracking-tight">Service DM Chat</h1>
-                <p class="text-slate-400 text-xs">Direct communication with the Alteo editing team.</p>
+                <p class="text-slate-400 text-xs">Real-time messaging with Alteo editing staff.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 bg-dark-800 border border-dark-600 rounded-xl shadow-lg overflow-hidden min-h-[420px]">
                 <div class="border-r border-dark-700 bg-dark-800 flex flex-col">
-                    <div class="p-3 border-b border-dark-700 bg-dark-700/50">
-                        <span id="dm-sidebar-title" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Conversations</span>
-                    </div>
+                    <div class="p-3 border-b border-dark-700 bg-dark-700/50"><span id="dm-sidebar-title" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Conversations</span></div>
                     <div id="dm-threads-list" class="divide-y divide-dark-700 overflow-y-auto flex-1"></div>
                 </div>
                 <div class="md:col-span-2 flex flex-col justify-between bg-dark-800/40">
-                    <div class="p-3 border-b border-dark-700 bg-dark-700/30">
-                        <span id="dm-active-chat-title" class="text-xs font-bold text-white">Select conversation</span>
-                    </div>
+                    <div class="p-3 border-b border-dark-700 bg-dark-700/30"><span id="dm-active-chat-title" class="text-xs font-bold text-white">Select conversation</span></div>
                     <div id="dm-messages-container" class="p-3 space-y-3 overflow-y-auto flex-1 max-h-[300px]">
                         <div class="text-center text-slate-500 py-16 text-xs">Select a conversation.</div>
                     </div>
@@ -356,10 +306,9 @@
             </div>
         </div>
 
-        <!-- VIEW: ADMIN DASHBOARD (Sidebar Layout) -->
+        <!-- VIEW: ADMIN DASHBOARD -->
         <div id="view-admin-dashboard" class="space-y-4 fade-in hidden">
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 min-h-[550px]">
-                <!-- Admin Sidebar -->
                 <div class="lg:col-span-1 bg-dark-800 border border-dark-600 rounded-xl p-3 flex flex-col justify-between space-y-4">
                     <div class="space-y-3">
                         <div class="flex items-center space-x-2.5 px-2 py-2 border-b border-dark-700">
@@ -374,7 +323,6 @@
                             <button onclick="switchAdminTab('orders')" id="admin-tab-btn-orders" class="w-full text-left px-3 py-2 rounded-lg font-medium text-slate-300 hover:bg-dark-700">Orders</button>
                             <button onclick="switchAdminTab('messages')" id="admin-tab-btn-messages" class="w-full text-left px-3 py-2 rounded-lg font-medium text-slate-300 hover:bg-dark-700">Messages</button>
                             <button onclick="switchAdminTab('customers')" id="admin-tab-btn-customers" class="w-full text-left px-3 py-2 rounded-lg font-medium text-slate-300 hover:bg-dark-700">Customers</button>
-                            <button onclick="switchAdminTab('settings')" id="admin-tab-btn-settings" class="w-full text-left px-3 py-2 rounded-lg font-medium text-slate-300 hover:bg-dark-700">Settings</button>
                         </nav>
                     </div>
                     <div class="pt-2 border-t border-dark-700">
@@ -382,13 +330,11 @@
                     </div>
                 </div>
 
-                <!-- Admin Content Panel -->
                 <div class="lg:col-span-4 space-y-4">
-                    <!-- Tab: Dashboard -->
                     <div id="admin-tab-dashboard" class="space-y-4">
                         <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 shadow">
-                            <h2 class="text-base font-bold text-white">Dashboard Overview</h2>
-                            <p class="text-slate-400 text-xs mt-0.5">Order statistics and member payouts.</p>
+                            <h2 class="text-base font-bold text-white">Global Cloud Overview</h2>
+                            <p class="text-slate-400 text-xs mt-0.5">Real-time statistics synced from Supabase.</p>
                         </div>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                             <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 space-y-1">
@@ -410,7 +356,6 @@
                         </div>
                     </div>
 
-                    <!-- Tab: Orders -->
                     <div id="admin-tab-orders" class="space-y-3 hidden">
                         <div class="bg-dark-800 border border-dark-600 rounded-xl p-3 flex flex-col sm:flex-row gap-3 items-center justify-between">
                             <input type="text" id="admin-search" oninput="renderAdminOrdersTable()" placeholder="Search orders..." class="w-full sm:w-64 bg-dark-700 border border-dark-600 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-brand">
@@ -434,12 +379,7 @@
                                 <table class="w-full text-left border-collapse text-xs">
                                     <thead>
                                         <tr class="bg-dark-700/80 border-b border-dark-600 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                                            <th class="p-3">ID</th>
-                                            <th class="p-3">Discord</th>
-                                            <th class="p-3">Type</th>
-                                            <th class="p-3">Price</th>
-                                            <th class="p-3">Status</th>
-                                            <th class="p-3 text-right">Action</th>
+                                            <th class="p-3">ID</th><th class="p-3">Discord</th><th class="p-3">Type</th><th class="p-3">Price</th><th class="p-3">Status</th><th class="p-3 text-right">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody id="admin-orders-tbody" class="divide-y divide-dark-700 text-slate-300"></tbody>
@@ -448,7 +388,6 @@
                         </div>
                     </div>
 
-                    <!-- Tab: Messages -->
                     <div id="admin-tab-messages" class="space-y-3 hidden">
                         <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 shadow space-y-3">
                             <h2 class="text-base font-bold text-white">Customer Support Messages</h2>
@@ -466,32 +405,19 @@
                         </div>
                     </div>
 
-                    <!-- Tab: Customers -->
                     <div id="admin-tab-customers" class="space-y-3 hidden">
                         <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 shadow space-y-3">
-                            <h2 class="text-base font-bold text-white">Registered Users</h2>
+                            <h2 class="text-base font-bold text-white">Registered Cloud Users</h2>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left border-collapse text-xs">
                                     <thead>
                                         <tr class="bg-dark-700/80 border-b border-dark-600 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                                            <th class="p-3">Username</th>
-                                            <th class="p-3">Role</th>
-                                            <th class="p-3">Joined</th>
+                                            <th class="p-3">Username</th><th class="p-3">Role</th><th class="p-3">Joined</th>
                                         </tr>
                                     </thead>
                                     <tbody id="admin-customers-tbody" class="divide-y divide-dark-700 text-slate-300"></tbody>
                                 </table>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Tab: Settings -->
-                    <div id="admin-tab-settings" class="space-y-3 hidden">
-                        <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 shadow space-y-3">
-                            <h2 class="text-base font-bold text-white">Database Settings</h2>
-                            <button onclick="resetLocalDatabase()" class="px-3 py-2 rounded-lg bg-red-950/50 hover:bg-red-900/60 text-red-300 text-xs border border-red-900/50">
-                                Reset Database to Defaults
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -531,7 +457,7 @@
         <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
             <div class="flex items-center space-x-2">
                 <img src="./image_2.png" alt="Logo" class="w-5 h-5 rounded object-cover border border-dark-600">
-                <span>&copy; 2026 Alteo Edit Services. All rights reserved.</span>
+                <span>&copy; 2026 Alteo Edit Services. Cloud Synchronized.</span>
             </div>
             <div class="flex items-center space-x-4">
                 <button onclick="router.navigate('home')" class="hover:text-white">Home</button>
@@ -541,83 +467,37 @@
         </div>
     </footer>
 
-    <!-- JavaScript Application Logic -->
+    <!-- JavaScript Application Logic (Supabase Async Integration) -->
     <script>
-        const INITIAL_ORDERS = [
-            {
-                id: "ALT-7821",
-                discordUsername: "satoru#0001",
-                editType: "JJK Character Edit",
-                price: "3 Discord Members",
-                character: "Gojo Satoru",
-                style: "Cyberpunk neon glow with heavy bass sync",
-                extraInstructions: "Make infinity domain flash cyan.",
-                status: "In Progress",
-                createdAt: "2026-04-01 14:32",
-                updatedAt: "2026-04-02 10:15"
-            },
-            {
-                id: "ALT-4912",
-                discordUsername: "yuji_tiger#9999",
-                editType: "Costume Edit",
-                price: "6 Discord Members",
-                costumeDescription: "Traditional samurai armor with purple cursed energy.",
-                references: "https://placehold.co/600x400/252b38/ffffff?text=Reference",
-                extraInstructions: "Include slow-mo sword draw.",
-                status: "Pending",
-                createdAt: "2026-04-03 18:45",
-                updatedAt: "2026-04-03 18:45"
-            }
-        ];
-
-        const INITIAL_USERS = [
-            { username: "Alteo", password: "Alteo2011", role: "admin", createdAt: "2026-01-01 00:00" },
-            { username: "satoru#0001", password: "password123", role: "customer", createdAt: "2026-04-01 14:00" },
-            { username: "yuji_tiger#9999", password: "password123", role: "customer", createdAt: "2026-04-03 18:00" }
-        ];
-
-        const INITIAL_MESSAGES = [
-            { id: "MSG-1", sender: "satoru#0001", recipient: "Alteo", text: "Hey Alteo, when will my Gojo edit be ready?", timestamp: "2026-04-02 11:00", read: false },
-            { id: "MSG-2", sender: "Alteo", recipient: "satoru#0001", text: "Working on the domain expansion VFX now!", timestamp: "2026-04-02 11:15", read: true }
-        ];
-
-        function getOrders() {
-            const data = localStorage.getItem('alteo_orders');
-            if (!data) {
-                localStorage.setItem('alteo_orders', JSON.stringify(INITIAL_ORDERS));
-                return INITIAL_ORDERS;
-            }
-            try { return JSON.parse(data); } catch (e) { return INITIAL_ORDERS; }
+        async function getOrders() {
+            const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+            if (error) { console.error('Error fetching orders:', error); return []; }
+            return data.map(o => ({
+                id: o.id,
+                discordUsername: o.discord_username,
+                editType: o.edit_type,
+                price: o.price,
+                character: o.character,
+                style: o.style,
+                costumeDescription: o.costume_description,
+                references: o.references,
+                extraInstructions: o.extra_instructions,
+                status: o.status,
+                createdAt: o.created_at,
+                updatedAt: o.updated_at
+            }));
         }
 
-        function saveOrders(orders) {
-            localStorage.setItem('alteo_orders', JSON.stringify(orders));
+        async function getUsers() {
+            const { data, error } = await supabase.from('users').select('*');
+            if (error) { console.error('Error fetching users:', error); return []; }
+            return data.map(u => ({ username: u.username, password: u.password, role: u.role, createdAt: u.created_at }));
         }
 
-        function getUsers() {
-            const data = localStorage.getItem('alteo_users');
-            if (!data) {
-                localStorage.setItem('alteo_users', JSON.stringify(INITIAL_USERS));
-                return INITIAL_USERS;
-            }
-            try { return JSON.parse(data); } catch (e) { return INITIAL_USERS; }
-        }
-
-        function saveUsers(users) {
-            localStorage.setItem('alteo_users', JSON.stringify(users));
-        }
-
-        function getMessages() {
-            const data = localStorage.getItem('alteo_messages');
-            if (!data) {
-                localStorage.setItem('alteo_messages', JSON.stringify(INITIAL_MESSAGES));
-                return INITIAL_MESSAGES;
-            }
-            try { return JSON.parse(data); } catch (e) { return INITIAL_MESSAGES; }
-        }
-
-        function saveMessages(msgs) {
-            localStorage.setItem('alteo_messages', JSON.stringify(msgs));
+        async function getMessages() {
+            const { data, error } = await supabase.from('messages').select('*').order('timestamp', { ascending: true });
+            if (error) { console.error('Error fetching messages:', error); return []; }
+            return data;
         }
 
         function getCurrentUser() {
@@ -632,7 +512,7 @@
             updateAuthHeader();
         }
 
-        function updateAuthHeader() {
+        async function updateAuthHeader() {
             const user = getCurrentUser();
             const guestDiv = document.getElementById('auth-header-guest');
             const userDiv = document.getElementById('auth-header-user');
@@ -660,17 +540,14 @@
                 adminBtn.classList.add('hidden');
                 mobileAdminBtn.classList.add('hidden');
             }
-            updateUnreadDmBadge();
+            await updateUnreadDmBadge();
         }
 
-        function updateUnreadDmBadge() {
+        async function updateUnreadDmBadge() {
             const user = getCurrentUser();
             const badge = document.getElementById('unread-dm-badge');
-            if (!user) {
-                badge.classList.add('hidden');
-                return;
-            }
-            const msgs = getMessages();
+            if (!user) { badge.classList.add('hidden'); return; }
+            const msgs = await getMessages();
             const unreadCount = msgs.filter(m => m.recipient === user.username && !m.read).length;
             if (unreadCount > 0) {
                 badge.textContent = unreadCount;
@@ -682,13 +559,10 @@
 
         const router = {
             current: 'home',
-            navigate(viewName) {
+            async navigate(viewName) {
                 const user = getCurrentUser();
                 if (viewName === 'admin-dashboard') {
-                    if (!user || user.role !== 'admin') {
-                        router.navigate('login');
-                        return;
-                    }
+                    if (!user || user.role !== 'admin') { router.navigate('login'); return; }
                 }
 
                 this.current = viewName;
@@ -704,42 +578,35 @@
                 if (target) target.classList.remove('hidden');
 
                 if (viewName === 'order') initOrderForm();
-                if (viewName === 'my-orders') renderMyOrders();
-                if (viewName === 'service-dm') initServiceDM();
-                if (viewName === 'admin-dashboard') initAdminDashboard();
+                if (viewName === 'my-orders') await renderMyOrders();
+                if (viewName === 'service-dm') await initServiceDM();
+                if (viewName === 'admin-dashboard') await initAdminDashboard();
             }
         };
 
         function guardedNavigate(viewName) {
             const user = getCurrentUser();
-            if (!user) {
-                alert("You must log in or sign up before accessing this page.");
-                router.navigate('login');
-                return;
-            }
+            if (!user) { alert("You must log in or sign up before accessing this page."); router.navigate('login'); return; }
             router.navigate(viewName);
         }
 
         function checkAdminPortal() {
             const user = getCurrentUser();
-            if (user && user.role === 'admin') {
-                router.navigate('admin-dashboard');
-            } else {
-                router.navigate('login');
-            }
+            if (user && user.role === 'admin') router.navigate('admin-dashboard');
+            else router.navigate('login');
         }
 
         function toggleMobileMenu() {
             document.getElementById('mobile-menu').classList.toggle('hidden');
         }
 
-        function handleSignupSubmit(e) {
+        async function handleSignupSubmit(e) {
             e.preventDefault();
             const username = document.getElementById('signup-username').value.trim();
             const password = document.getElementById('signup-password').value;
             const errEl = document.getElementById('signup-error');
 
-            const users = getUsers();
+            const users = await getUsers();
             if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
                 errEl.textContent = "Username already taken.";
                 errEl.classList.remove('hidden');
@@ -748,21 +615,22 @@
 
             const now = new Date();
             const dateStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
-            const newUser = { username, password, role: 'customer', createdAt: dateStr };
-            users.push(newUser);
-            saveUsers(users);
+            const newUser = { username, password, role: 'customer', created_at: dateStr };
 
-            setCurrentUser(newUser);
+            const { error } = await supabase.from('users').insert([newUser]);
+            if (error) { errEl.textContent = error.message; errEl.classList.remove('hidden'); return; }
+
+            setCurrentUser({ username, password, role: 'customer', createdAt: dateStr });
             router.navigate('home');
         }
 
-        function handleLoginSubmit(e) {
+        async function handleLoginSubmit(e) {
             e.preventDefault();
             const usernameInput = document.getElementById('login-username').value.trim();
             const passwordInput = document.getElementById('login-password').value;
             const errEl = document.getElementById('login-error');
 
-            const users = getUsers();
+            const users = await getUsers();
             const found = users.find(u => u.username.toLowerCase() === usernameInput.toLowerCase() && u.password === passwordInput);
 
             if (!found) {
@@ -771,12 +639,9 @@
                 return;
             }
 
-            setCurrentUser(found);
-            if (found.role === 'admin') {
-                router.navigate('admin-dashboard');
-            } else {
-                router.navigate('home');
-            }
+            setCurrentUser({ username: found.username, role: found.role, createdAt: found.createdAt });
+            if (found.role === 'admin') router.navigate('admin-dashboard');
+            else router.navigate('home');
         }
 
         function handleLogout() {
@@ -786,17 +651,10 @@
 
         function selectAndOrder(editType) {
             const user = getCurrentUser();
-            if (!user) {
-                alert("You must log in or sign up before placing an order.");
-                router.navigate('login');
-                return;
-            }
+            if (!user) { alert("You must log in or sign up before placing an order."); router.navigate('login'); return; }
             router.navigate('order');
             const selectEl = document.getElementById('edit-type');
-            if (selectEl) {
-                selectEl.value = editType;
-                updateFormFields();
-            }
+            if (selectEl) { selectEl.value = editType; updateFormFields(); }
         }
 
         function initOrderForm() {
@@ -821,7 +679,7 @@
                     </div>
                     <div class="space-y-1">
                         <label class="block text-xs font-semibold text-slate-200">Style Description <span class="text-red-400">*</span></label>
-                        <textarea id="field-style" required rows="2" placeholder="Describe aesthetic, color grading, or transitions..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand resize-none"></textarea>
+                        <textarea id="field-style" required rows="2" placeholder="Describe aesthetic..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand resize-none"></textarea>
                     </div>
                 `;
             } else {
@@ -829,80 +687,69 @@
                 container.innerHTML = `
                     <div class="space-y-1">
                         <label class="block text-xs font-semibold text-slate-200">Costume Description <span class="text-red-400">*</span></label>
-                        <textarea id="field-costumedesc" required rows="2" placeholder="Describe outfit or attire..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand resize-none"></textarea>
+                        <textarea id="field-costumedesc" required rows="2" placeholder="Describe outfit..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand resize-none"></textarea>
                     </div>
                     <div class="space-y-1">
-                        <label class="block text-xs font-semibold text-slate-200">References or Image URL (Optional)</label>
-                        <input type="url" id="field-references" placeholder="https://imgur.com/..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand">
+                        <label class="block text-xs font-semibold text-slate-200">References URL (Optional)</label>
+                        <input type="url" id="field-references" placeholder="https://..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand">
                     </div>
                 `;
             }
         }
 
-        function handleOrderSubmit(e) {
+        async function handleOrderSubmit(e) {
             e.preventDefault();
             const editType = document.getElementById('edit-type').value;
             const discordUsername = document.getElementById('discord-username').value.trim();
             const extraInstructions = document.getElementById('extra-instructions').value.trim();
 
-            if (!discordUsername) {
-                alert("Discord username is required.");
-                return;
-            }
+            if (!discordUsername) { alert("Discord username is required."); return; }
 
             const now = new Date();
             const dateStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
             const orderId = 'ALT-' + Math.floor(1000 + Math.random() * 9000);
 
-            const newOrder = {
+            const newOrderDB = {
                 id: orderId,
-                discordUsername: discordUsername,
-                editType: editType,
+                discord_username: discordUsername,
+                edit_type: editType,
                 price: editType === 'JJK Character Edit' ? '3 Discord Members' : '6 Discord Members',
-                extraInstructions: extraInstructions,
+                extra_instructions: extraInstructions,
                 status: 'Pending',
-                createdAt: dateStr,
-                updatedAt: dateStr
+                created_at: dateStr,
+                updated_at: dateStr
             };
 
             if (editType === 'JJK Character Edit') {
-                newOrder.character = document.getElementById('field-character').value.trim();
-                newOrder.style = document.getElementById('field-style').value.trim();
+                newOrderDB.character = document.getElementById('field-character').value.trim();
+                newOrderDB.style = document.getElementById('field-style').value.trim();
             } else {
-                newOrder.costumeDescription = document.getElementById('field-costumedesc').value.trim();
-                newOrder.references = document.getElementById('field-references').value.trim();
+                newOrderDB.costume_description = document.getElementById('field-costumedesc').value.trim();
+                newOrderDB.references = document.getElementById('field-references').value.trim();
             }
 
-            const orders = getOrders();
-            orders.unshift(newOrder);
-            saveOrders(orders);
+            const { error } = await supabase.from('orders').insert([newOrderDB]);
+            if (error) { alert("Error saving order: " + error.message); return; }
 
             document.getElementById('conf-order-id').textContent = orderId;
             document.getElementById('conf-edit-type').textContent = editType;
-            document.getElementById('conf-price').textContent = newOrder.price;
-            document.getElementById('conf-status').textContent = newOrder.status;
+            document.getElementById('conf-price').textContent = newOrderDB.price;
+            document.getElementById('conf-status').textContent = newOrderDB.status;
 
             document.getElementById('order-form').reset();
             router.navigate('confirmation');
         }
 
-        function renderMyOrders() {
+        async function renderMyOrders() {
             const user = getCurrentUser();
-            if (!user) {
-                router.navigate('login');
-                return;
-            }
+            if (!user) { router.navigate('login'); return; }
 
             const container = document.getElementById('my-orders-list');
             const emptyEl = document.getElementById('my-orders-empty');
-            const orders = getOrders();
+            const orders = await getOrders();
             const myOrders = user.role === 'admin' ? orders : orders.filter(o => o.discordUsername.toLowerCase() === user.username.toLowerCase());
 
-            if (myOrders.length === 0) {
-                container.innerHTML = '';
-                emptyEl.classList.remove('hidden');
-                return;
-            }
+            if (myOrders.length === 0) { container.innerHTML = ''; emptyEl.classList.remove('hidden'); return; }
 
             emptyEl.classList.add('hidden');
             container.innerHTML = myOrders.map(o => {
@@ -929,28 +776,22 @@
 
         let activeDmUser = null;
 
-        function initServiceDM() {
+        async function initServiceDM() {
             const user = getCurrentUser();
-            if (!user) {
-                router.navigate('login');
-                return;
-            }
+            if (!user) { router.navigate('login'); return; }
 
             const threadsList = document.getElementById('dm-threads-list');
             const messagesContainer = document.getElementById('dm-messages-container');
             const form = document.getElementById('dm-input-form');
             const titleEl = document.getElementById('dm-active-chat-title');
             const sidebarTitle = document.getElementById('dm-sidebar-title');
-            const msgs = getMessages();
+            const msgs = await getMessages();
 
             if (user.role === 'admin') {
                 sidebarTitle.textContent = "Customers";
-                const users = getUsers().filter(u => u.role !== 'admin');
+                const users = (await getUsers()).filter(u => u.role !== 'admin');
 
-                if (users.length === 0) {
-                    threadsList.innerHTML = `<div class="p-3 text-[11px] text-slate-500 text-center">No customers.</div>`;
-                    return;
-                }
+                if (users.length === 0) { threadsList.innerHTML = `<div class="p-3 text-[11px] text-slate-500 text-center">No customers.</div>`; return; }
 
                 if (!activeDmUser) activeDmUser = users[0].username;
 
@@ -966,9 +807,11 @@
                 const threadMsgs = msgs.filter(m => (m.sender === activeDmUser && m.recipient === 'Alteo') || (m.sender === 'Alteo' && m.recipient === activeDmUser));
                 renderMessagesInContainer(messagesContainer, threadMsgs, user.username);
 
-                msgs.forEach(m => { if (m.recipient === 'Alteo' && m.sender === activeDmUser) m.read = true; });
-                saveMessages(msgs);
-                updateUnreadDmBadge();
+                const unreadForMe = msgs.filter(m => m.recipient === 'Alteo' && m.sender === activeDmUser && !m.read);
+                for (let m of unreadForMe) {
+                    await supabase.from('messages').update({ read: true }).eq('id', m.id);
+                }
+                await updateUnreadDmBadge();
 
             } else {
                 sidebarTitle.textContent = "Staff";
@@ -987,22 +830,21 @@
                 const threadMsgs = msgs.filter(m => (m.sender === user.username && m.recipient === 'Alteo') || (m.sender === 'Alteo' && m.recipient === user.username));
                 renderMessagesInContainer(messagesContainer, threadMsgs, user.username);
 
-                msgs.forEach(m => { if (m.recipient === user.username && m.sender === 'Alteo') m.read = true; });
-                saveMessages(msgs);
-                updateUnreadDmBadge();
+                const unreadForMe = msgs.filter(m => m.recipient === user.username && m.sender === 'Alteo' && !m.read);
+                for (let m of unreadForMe) {
+                    await supabase.from('messages').update({ read: true }).eq('id', m.id);
+                }
+                await updateUnreadDmBadge();
             }
         }
 
-        function setActiveDmUser(username) {
+        async function setActiveDmUser(username) {
             activeDmUser = username;
-            initServiceDM();
+            await initServiceDM();
         }
 
         function renderMessagesInContainer(container, messages, currentUsername) {
-            if (messages.length === 0) {
-                container.innerHTML = `<div class="text-center text-slate-500 py-12 text-xs">No messages yet.</div>`;
-                return;
-            }
+            if (messages.length === 0) { container.innerHTML = `<div class="text-center text-slate-500 py-12 text-xs">No messages yet.</div>`; return; }
 
             container.innerHTML = messages.map(m => {
                 const isMe = m.sender === currentUsername;
@@ -1019,7 +861,7 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        function handleSendDM(e) {
+        async function handleSendDM(e) {
             e.preventDefault();
             const input = document.getElementById('dm-message-input');
             const text = input.value.trim();
@@ -1041,45 +883,36 @@
                 read: false
             };
 
-            const msgs = getMessages();
-            msgs.push(newMsg);
-            saveMessages(msgs);
-
+            await supabase.from('messages').insert([newMsg]);
             input.value = '';
-            initServiceDM();
+            await initServiceDM();
         }
 
-        function switchAdminTab(tabName) {
-            ['dashboard', 'orders', 'messages', 'customers', 'settings'].forEach(t => {
+        async function switchAdminTab(tabName) {
+            ['dashboard', 'orders', 'messages', 'customers'].forEach(t => {
                 const tabEl = document.getElementById(`admin-tab-${t}`);
                 const btnEl = document.getElementById(`admin-tab-btn-${t}`);
                 if (tabEl) tabEl.classList.add('hidden');
-                if (btnEl) {
-                    btnEl.classList.remove('bg-brand', 'text-white');
-                    btnEl.classList.add('text-slate-300', 'hover:bg-dark-700');
-                }
+                if (btnEl) { btnEl.classList.remove('bg-brand', 'text-white'); btnEl.classList.add('text-slate-300', 'hover:bg-dark-700'); }
             });
 
             const activeTab = document.getElementById(`admin-tab-${tabName}`);
             const activeBtn = document.getElementById(`admin-tab-btn-${tabName}`);
             if (activeTab) activeTab.classList.remove('hidden');
-            if (activeBtn) {
-                activeBtn.classList.add('bg-brand', 'text-white');
-                activeBtn.classList.remove('text-slate-300', 'hover:bg-dark-700');
-            }
+            if (activeBtn) { activeBtn.classList.add('bg-brand', 'text-white'); activeBtn.classList.remove('text-slate-300', 'hover:bg-dark-700'); }
 
-            if (tabName === 'dashboard') renderAdminStats();
-            if (tabName === 'orders') renderAdminOrdersTable();
-            if (tabName === 'messages') initAdminMessagesTab();
-            if (tabName === 'customers') renderAdminCustomersTable();
+            if (tabName === 'dashboard') await renderAdminStats();
+            if (tabName === 'orders') await renderAdminOrdersTable();
+            if (tabName === 'messages') await initAdminMessagesTab();
+            if (tabName === 'customers') await renderAdminCustomersTable();
         }
 
-        function initAdminDashboard() {
-            switchAdminTab('dashboard');
+        async function initAdminDashboard() {
+            await switchAdminTab('dashboard');
         }
 
-        function renderAdminStats() {
-            const orders = getOrders();
+        async function renderAdminStats() {
+            const orders = await getOrders();
             let membersOwed = 0, jjkCount = 0, costumeCount = 0;
 
             orders.forEach(o => {
@@ -1095,8 +928,8 @@
             document.getElementById('stat-costume-orders').textContent = costumeCount;
         }
 
-        function renderAdminOrdersTable() {
-            const orders = getOrders();
+        async function renderAdminOrdersTable() {
+            const orders = await getOrders();
             const search = document.getElementById('admin-search').value.toLowerCase();
             const filterType = document.getElementById('admin-filter-type').value;
             const filterStatus = document.getElementById('admin-filter-status').value;
@@ -1109,10 +942,7 @@
                 return matchesSearch && matchesType && matchesStatus;
             });
 
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">No orders found.</td></tr>`;
-                return;
-            }
+            if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">No orders found.</td></tr>`; return; }
 
             tbody.innerHTML = filtered.map(o => {
                 let badge = 'bg-amber-950/60 text-amber-300 border-amber-800/40';
@@ -1127,9 +957,7 @@
                         <td class="p-3">${escapeHtml(o.editType)}</td>
                         <td class="p-3 text-slate-400">${escapeHtml(o.price)}</td>
                         <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-semibold border ${badge}">${escapeHtml(o.status)}</span></td>
-                        <td class="p-3 text-right">
-                            <button onclick="openOrderModal('${o.id}')" class="px-2.5 py-1 rounded bg-dark-700 hover:bg-dark-600 text-slate-200 text-xs border border-dark-600">View</button>
-                        </td>
+                        <td class="p-3 text-right"><button onclick="openOrderModal('${o.id}')" class="px-2.5 py-1 rounded bg-dark-700 hover:bg-dark-600 text-slate-200 text-xs border border-dark-600">View</button></td>
                     </tr>
                 `;
             }).join('');
@@ -1137,17 +965,14 @@
 
         let adminActiveChatUser = null;
 
-        function initAdminMessagesTab() {
-            const users = getUsers().filter(u => u.role !== 'admin');
+        async function initAdminMessagesTab() {
+            const users = (await getUsers()).filter(u => u.role !== 'admin');
             const threadsEl = document.getElementById('admin-dm-threads');
             const chatTitle = document.getElementById('admin-dm-chat-title');
             const msgContainer = document.getElementById('admin-dm-messages');
             const form = document.getElementById('admin-dm-form');
 
-            if (users.length === 0) {
-                threadsEl.innerHTML = `<div class="p-3 text-xs text-slate-500 text-center">No customers.</div>`;
-                return;
-            }
+            if (users.length === 0) { threadsEl.innerHTML = `<div class="p-3 text-xs text-slate-500 text-center">No customers.</div>`; return; }
 
             if (!adminActiveChatUser) adminActiveChatUser = users[0].username;
 
@@ -1160,17 +985,17 @@
             chatTitle.textContent = `Chat with ${adminActiveChatUser}`;
             form.classList.remove('hidden');
 
-            const msgs = getMessages();
+            const msgs = await getMessages();
             const threadMsgs = msgs.filter(m => (m.sender === adminActiveChatUser && m.recipient === 'Alteo') || (m.sender === 'Alteo' && m.recipient === adminActiveChatUser));
             renderMessagesInContainer(msgContainer, threadMsgs, 'Alteo');
         }
 
-        function setAdminActiveChat(username) {
+        async function setAdminActiveChat(username) {
             adminActiveChatUser = username;
-            initAdminMessagesTab();
+            await initAdminMessagesTab();
         }
 
-        function handleAdminSendDM(e) {
+        async function handleAdminSendDM(e) {
             e.preventDefault();
             const input = document.getElementById('admin-dm-input');
             const text = input.value.trim();
@@ -1188,16 +1013,13 @@
                 read: false
             };
 
-            const msgs = getMessages();
-            msgs.push(newMsg);
-            saveMessages(msgs);
-
+            await supabase.from('messages').insert([newMsg]);
             input.value = '';
-            initAdminMessagesTab();
+            await initAdminMessagesTab();
         }
 
-        function renderAdminCustomersTable() {
-            const users = getUsers();
+        async function renderAdminCustomersTable() {
+            const users = await getUsers();
             const tbody = document.getElementById('admin-customers-tbody');
 
             tbody.innerHTML = users.map(u => `
@@ -1209,16 +1031,6 @@
             `).join('');
         }
 
-        function resetLocalDatabase() {
-            if (confirm("Reset database to defaults?")) {
-                localStorage.removeItem('alteo_orders');
-                localStorage.removeItem('alteo_users');
-                localStorage.removeItem('alteo_messages');
-                alert("Database reset.");
-                initAdminDashboard();
-            }
-        }
-
         function adminLogout() {
             setCurrentUser(null);
             router.navigate('home');
@@ -1226,8 +1038,8 @@
 
         let currentModalOrderId = null;
 
-        function openOrderModal(orderId) {
-            const orders = getOrders();
+        async function openOrderModal(orderId) {
+            const orders = await getOrders();
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
 
@@ -1237,11 +1049,8 @@
 
             const user = getCurrentUser();
             const adminActionsEl = document.getElementById('modal-admin-actions');
-            if (user && user.role === 'admin') {
-                adminActionsEl.classList.remove('hidden');
-            } else {
-                adminActionsEl.classList.add('hidden');
-            }
+            if (user && user.role === 'admin') adminActionsEl.classList.remove('hidden');
+            else adminActionsEl.classList.add('hidden');
 
             let specificHTML = '';
             if (order.editType === 'JJK Character Edit') {
@@ -1274,31 +1083,28 @@
             currentModalOrderId = null;
         }
 
-        function modalUpdateStatus() {
+        async function modalUpdateStatus() {
             if (!currentModalOrderId) return;
             const newStatus = document.getElementById('modal-status-select').value;
-            const orders = getOrders();
-            const index = orders.findIndex(o => o.id === currentModalOrderId);
-            if (index !== -1) {
-                orders[index].status = newStatus;
-                const now = new Date();
-                orders[index].updatedAt = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
-                saveOrders(orders);
-                renderAdminOrdersTable();
-                renderAdminStats();
-            }
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+
+            const { error } = await supabase.from('orders').update({ status: newStatus, updated_at: dateStr }).eq('id', currentModalOrderId);
+            if (error) { alert("Error updating status: " + error.message); return; }
+
+            await renderAdminOrdersTable();
+            await renderAdminStats();
         }
 
-        function modalDeleteOrder() {
+        async function modalDeleteOrder() {
             if (!currentModalOrderId) return;
             if (confirm("Delete order " + currentModalOrderId + "?")) {
-                let orders = getOrders();
-                orders = orders.filter(o => o.id !== currentModalOrderId);
-                saveOrders(orders);
+                const { error } = await supabase.from('orders').delete().eq('id', currentModalOrderId);
+                if (error) { alert("Error deleting: " + error.message); return; }
                 closeOrderModal();
-                renderAdminOrdersTable();
-                renderAdminStats();
-                renderMyOrders();
+                await renderAdminOrdersTable();
+                await renderAdminStats();
+                await renderMyOrders();
             }
         }
 
@@ -1307,11 +1113,15 @@
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            getOrders();
-            getUsers();
-            getMessages();
-            updateAuthHeader();
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Seed default admin if user table is empty
+            const users = await getUsers();
+            if (users.length === 0) {
+                await supabase.from('users').insert([
+                    { username: 'Alteo', password: 'Alteo2011', role: 'admin', created_at: '2026-01-01 00:00' }
+                ]);
+            }
+            await updateAuthHeader();
             router.navigate('home');
         });
     </script>
